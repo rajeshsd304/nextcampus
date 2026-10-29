@@ -9,6 +9,7 @@ import {
   CategoryForm,
   ExamTargetForm,
   SubjectForm,
+  TopicForm,
   UniversityForm,
 } from "@/features/catalog/components/catalog-forms";
 import { loadAdminCatalog } from "@/features/catalog/server/queries";
@@ -105,6 +106,41 @@ export default async function CatalogItemPage({ params }: PageProps<"/platform/c
                   isActive: row.is_active,
                 }
               : { slug: "", nameEn: "", nameBn: "", isActive: true }
+          }
+        />
+      );
+      break;
+    }
+    case "topics": {
+      const row = isNew ? null : catalog.topics.find((topic) => topic.id === id);
+      if (!isNew && !row) notFound();
+      form = (
+        <TopicForm
+          subjects={catalog.subjects.map((s) => ({ id: s.id, label: localized(s, "name", locale) }))}
+          topics={catalog.topics.map((topic) => ({
+            id: topic.id,
+            subjectId: topic.subject_id,
+            label: localized(topic, "name", locale),
+          }))}
+          defaults={
+            row
+              ? {
+                  id: row.id,
+                  subjectId: row.subject_id,
+                  parentId: row.parent_id ?? "",
+                  slug: row.slug,
+                  nameEn: row.name_en,
+                  nameBn: row.name_bn,
+                  isActive: row.is_active,
+                }
+              : {
+                  subjectId: catalog.subjects[0]?.id ?? "",
+                  parentId: "",
+                  slug: "",
+                  nameEn: "",
+                  nameBn: "",
+                  isActive: true,
+                }
           }
         />
       );

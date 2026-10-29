@@ -2,9 +2,15 @@
   style="font-family: &quot;Hind Siliguri&quot;, Inter, Arial, sans-serif; line-height: 1.7; color: #0b1430"
 >
   <h2>NextCampus অ্যাকাউন্ট নিশ্চিত করুন</h2>
-  <p>NextCampus-এ স্বাগতম। অ্যাকাউন্ট তৈরি শেষ করতে আপনার ইমেইল ঠিকানা নিশ্চিত করুন।</p>
+  <p>আপনার যাচাইকরণ কোড:</p>
+  <p style="font-size: 32px; font-weight: 700; letter-spacing: 8px; margin: 8px 0">{{ .Token }}</p>
+  <p>কোডটি NextCampus-এর যাচাই পৃষ্ঠায় লিখুন। কোডটি ১ ঘণ্টা কার্যকর থাকবে এবং একবারই ব্যবহার করা যাবে।</p>
   <h2 lang="en">Confirm your NextCampus account</h2>
-  <p lang="en">Welcome to NextCampus. Confirm your email address to finish creating your account.</p>
+  <p lang="en">
+    Your verification code is <strong>{{ .Token }}</strong>. Enter it on the NextCampus verification page. It
+    expires in 1 hour and can be used once.
+  </p>
+  <p>অথবা এই লিংকে ক্লিক করুন / Or click this link:</p>
   <p>
     <a
       href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=email&next={{ .RedirectTo }}"

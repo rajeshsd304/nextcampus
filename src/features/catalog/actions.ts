@@ -12,6 +12,7 @@ import {
   categoryFormSchema,
   examTargetFormSchema,
   subjectFormSchema,
+  topicFormSchema,
   universityFormSchema,
 } from "./schemas";
 
@@ -30,7 +31,7 @@ function revalidateCatalog() {
   revalidatePath("/", "layout");
 }
 
-type SortableTable = "university_categories" | "universities" | "subjects" | "exam_targets";
+type SortableTable = "university_categories" | "universities" | "subjects" | "exam_targets" | "topics";
 
 async function nextSortOrder(supabase: SupabaseServerClient, table: SortableTable): Promise<number> {
   const { data } = await supabase
@@ -130,6 +131,33 @@ export async function saveSubjectAction(input: unknown): Promise<ActionResult> {
   return ok(undefined, "catalogAdmin.saved");
 }
 
+export async function saveTopicAction(input: unknown): Promise<ActionResult> {
+  const parsed = topicFormSchema.safeParse(input);
+  if (!parsed.success) return invalid(parsed.error);
+  const supabase = await authorize();
+  if (!supabase) return fail("not_authorized");
+
+  const row = {
+    subject_id: parsed.data.subjectId,
+    parent_id: parsed.data.parentId || null,
+    slug: parsed.data.slug,
+    name_en: parsed.data.nameEn,
+    name_bn: parsed.data.nameBn,
+    is_active: parsed.data.isActive,
+  };
+  const { data, error } = parsed.data.id
+    ? await supabase.from("topics").update(row).eq("id", parsed.data.id).select("id")
+    : await supabase
+        .from("topics")
+        .insert({ ...row, sort_order: await nextSortOrder(supabase, "topics") })
+        .select("id");
+  if (error) return writeError(error);
+  if (!data?.length) return fail("not_authorized");
+
+  revalidateCatalog();
+  return ok(undefined, "catalogAdmin.saved");
+}
+
 export async function saveExamTargetAction(input: unknown): Promise<ActionResult> {
   const parsed = examTargetFormSchema.safeParse(input);
   if (!parsed.success) return invalid(parsed.error);
@@ -168,10 +196,10 @@ export async function saveExamTargetAction(input: unknown): Promise<ActionResult
   return ok(undefined, "catalogAdmin.saved");
 }
 
-type Entity = "university_category" | "university" | "subject" | "exam_target";
+type Entity = "university_category" | "university" | "subject" | "exam_target" | "topic";
 
 function isEntity(value: string): value is Entity {
-  return ["university_category", "university", "subject", "exam_target"].includes(value);
+  return ["university_category", "university", "subject", "exam_target", "topic"].includes(value);
 }
 
 /** Per-table queries (typed separately: the key column differs for categories). */
@@ -189,6 +217,8 @@ function setActive(supabase: SupabaseServerClient, entity: Entity, id: string, a
       return supabase.from("subjects").update({ is_active: active }).eq("id", id).select("is_active");
     case "exam_target":
       return supabase.from("exam_targets").update({ is_active: active }).eq("id", id).select("is_active");
+    case "topic":
+      return supabase.from("topics").update({ is_active: active }).eq("id", id).select("is_active");
   }
 }
 
@@ -202,6 +232,8 @@ function remove(supabase: SupabaseServerClient, entity: Entity, id: string) {
       return supabase.from("subjects").delete().eq("id", id).select("id");
     case "exam_target":
       return supabase.from("exam_targets").delete().eq("id", id).select("id");
+    case "topic":
+      return supabase.from("topics").delete().eq("id", id).select("id");
   }
 }
 

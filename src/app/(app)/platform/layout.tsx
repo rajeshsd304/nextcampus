@@ -1,4 +1,4 @@
-import { LayoutDashboard, Library } from "lucide-react";
+import { BookOpenCheck, LayoutDashboard, Library, UserCog } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import type { ReactNode } from "react";
 import { SideNav } from "@/components/app-shell/side-nav";
@@ -15,6 +15,8 @@ export default async function PlatformLayout({ children }: { children: ReactNode
         items={[
           { href: "/platform", label: t("overview"), icon: <LayoutDashboard />, exact: true },
           { href: "/platform/catalog", label: t("catalog"), icon: <Library /> },
+          { href: "/platform/questions", label: t("questions"), icon: <BookOpenCheck /> },
+          { href: "/platform/admins", label: t("admins"), icon: <UserCog /> },
         ]}
       />
       <main id="main" className="min-w-0 flex-1">

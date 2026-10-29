@@ -7,7 +7,7 @@ type Client =
   ReturnType<typeof createPublicSupabaseClient> | Awaited<ReturnType<typeof createSupabaseServerClient>>;
 
 async function load(supabase: Client): Promise<Catalog> {
-  const [categories, universities, subjects, targets] = await Promise.all([
+  const [categories, universities, subjects, targets, topics] = await Promise.all([
     supabase
       .from("university_categories")
       .select("key, name_en, name_bn, sort_order, is_active")
@@ -23,8 +23,12 @@ async function load(supabase: Client): Promise<Catalog> {
         "id, university_id, slug, name_en, name_bn, description_en, description_bn, typical_format_en, typical_format_bn, negative_marking, sort_order, is_active, exam_target_subjects(subject_id)",
       )
       .order("sort_order"),
+    supabase
+      .from("topics")
+      .select("id, subject_id, parent_id, slug, name_en, name_bn, sort_order, is_active")
+      .order("sort_order"),
   ]);
-  const error = categories.error ?? universities.error ?? subjects.error ?? targets.error;
+  const error = categories.error ?? universities.error ?? subjects.error ?? targets.error ?? topics.error;
   if (error) throw new Error(`Failed to load catalog: ${error.message}`);
 
   return {
@@ -36,6 +40,7 @@ async function load(supabase: Client): Promise<Catalog> {
       negative_marking: Number(target.negative_marking),
       subjectIds: exam_target_subjects.map((link) => link.subject_id),
     })),
+    topics: topics.data ?? [],
   };
 }
 

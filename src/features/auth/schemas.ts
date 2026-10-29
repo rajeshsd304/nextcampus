@@ -45,6 +45,16 @@ export const newPasswordFormSchema = z
     message: "validation.passwordMismatch",
   });
 
+export const verifyOtpSchema = z.object({
+  email: emailSchema,
+  token: z
+    .string()
+    .trim()
+    .regex(/^\d{6}$/, "validation.otpFormat"),
+  next: nextSchema,
+});
+
+export type VerifyOtpInput = z.input<typeof verifyOtpSchema>;
 export type SignInInput = z.input<typeof signInSchema>;
 export type SignUpInput = z.input<typeof signUpSchema>;
 export type ForgotPasswordInput = z.input<typeof forgotPasswordSchema>;

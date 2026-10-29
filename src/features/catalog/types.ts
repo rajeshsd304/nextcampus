@@ -21,6 +21,10 @@ export type CatalogSubject = Pick<
   Tables<"subjects">,
   "id" | "slug" | "name_en" | "name_bn" | "sort_order" | "is_active"
 >;
+export type CatalogTopic = Pick<
+  Tables<"topics">,
+  "id" | "subject_id" | "parent_id" | "slug" | "name_en" | "name_bn" | "sort_order" | "is_active"
+>;
 export type CatalogTarget = Pick<
   Tables<"exam_targets">,
   | "id"
@@ -42,6 +46,7 @@ export type Catalog = {
   universities: CatalogUniversity[];
   subjects: CatalogSubject[];
   targets: CatalogTarget[];
+  topics: CatalogTopic[];
 };
 
 /** Admin-managed catalog entities (URL segment ↔ database entity name). */
@@ -50,6 +55,7 @@ export const CATALOG_ENTITIES = {
   universities: "university",
   subjects: "subject",
   targets: "exam_target",
+  topics: "topic",
 } as const;
 export type CatalogEntitySegment = keyof typeof CATALOG_ENTITIES;
 export type CatalogEntity = (typeof CATALOG_ENTITIES)[CatalogEntitySegment];

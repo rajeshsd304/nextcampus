@@ -3,7 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { FormField } from "@/components/ui/form-field";
@@ -18,6 +18,7 @@ import { PasswordInput } from "./password-input";
 export function SignInForm({ next }: { next?: string | undefined }) {
   const t = useTranslations("authForms");
   const [pending, startTransition] = useTransition();
+  const [unverifiedEmail, setUnverifiedEmail] = useState<string | null>(null);
   const form = useForm<SignInInput>({
     resolver: zodResolver(signInSchema),
     defaultValues: { email: "", password: "", next },
@@ -26,14 +27,26 @@ export function SignInForm({ next }: { next?: string | undefined }) {
 
   const onSubmit = form.handleSubmit((values) => {
     startTransition(async () => {
+      setUnverifiedEmail(null);
       const result = await signInWithPasswordAction(values);
-      if (result && !result.ok) applyActionErrors(form, result, ["email", "password"]);
+      if (result && !result.ok) {
+        applyActionErrors(form, result, ["email", "password"]);
+        if (result.error.code === "email_not_confirmed") setUnverifiedEmail(values.email);
+      }
     });
   });
 
   return (
     <form onSubmit={onSubmit} noValidate className="space-y-4">
       <FormError message={errors.root?.server?.message} />
+      {unverifiedEmail ? (
+        <Link
+          href={`/verify-email?email=${encodeURIComponent(unverifiedEmail)}`}
+          className="text-primary inline-flex min-h-11 items-center text-sm font-semibold hover:underline dark:text-indigo-300"
+        >
+          {t("verifyNow")}
+        </Link>
+      ) : null}
       <FormField id="email" label={t("email")} error={errors.email?.message}>
         <Input type="email" autoComplete="email" inputMode="email" {...form.register("email")} />
       </FormField>

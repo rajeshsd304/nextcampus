@@ -34,6 +34,21 @@ const CATALOG_TABLES = [
   "subjects",
   "exam_targets",
   "exam_target_subjects",
+  "topics",
+];
+
+// Phase 2 question bank: no anon access at all (see questions.test.ts).
+const QUESTION_TABLES = [
+  "content_settings",
+  "questions",
+  "question_options",
+  "question_answer_keys",
+  "written_question_specs",
+  "model_answers",
+  "rubrics",
+  "rubric_criteria",
+  "question_assets",
+  "question_revisions",
 ];
 
 describe("schema hardening", () => {
@@ -43,12 +58,14 @@ describe("schema hardening", () => {
        from pg_class c join pg_namespace n on n.oid = c.relnamespace
        where n.nspname = 'public' and c.relkind = 'r'`,
     );
-    expect(rows.map((r) => r.relname).sort()).toEqual([...EXPOSED_TABLES, ...CATALOG_TABLES].sort());
+    expect(rows.map((r) => r.relname).sort()).toEqual(
+      [...EXPOSED_TABLES, ...CATALOG_TABLES, ...QUESTION_TABLES].sort(),
+    );
     for (const row of rows) expect(row.relrowsecurity, row.relname).toBe(true);
   });
 
   it("gives anon no access to any identity or tenancy table", async () => {
-    for (const table of EXPOSED_TABLES) {
+    for (const table of [...EXPOSED_TABLES, ...QUESTION_TABLES]) {
       await expect(as(db, "anon", (tx) => tx.query(`select 1 from public.${table} limit 1`))).rejects.toThrow(
         /permission denied/,
       );

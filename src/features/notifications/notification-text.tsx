@@ -11,6 +11,10 @@ const TEMPLATES = [
   "password_changed",
   "workspace_ready",
   "public_welcome",
+  "question_rejected",
+  "question_published",
+  "platform_admin_granted",
+  "platform_admin_revoked",
 ] as const;
 type Template = (typeof TEMPLATES)[number];
 
@@ -39,6 +43,7 @@ export function NotificationText({ item, part }: { item: NotificationItem; part:
   const values = {
     organization: stringParam(item.params, "organization"),
     name: stringParam(item.params, "name"),
+    reason: stringParam(item.params, "reason"),
     role: isOrgRole(role) ? tRoles(`${ORG_ROLE_DISPLAY[role]}.label`) : role,
   };
   return <>{t(`${item.template}.${part}`, values)}</>;

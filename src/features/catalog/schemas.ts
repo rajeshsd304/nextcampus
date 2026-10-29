@@ -48,6 +48,21 @@ export const subjectFormSchema = z.object({
   isActive: z.boolean(),
 });
 
+export const topicFormSchema = z.object({
+  id: z.uuid().optional(),
+  subjectId: z.uuid("validation.subjectRequired"),
+  parentId: z.union([z.literal(""), z.uuid()]),
+  slug: z
+    .string()
+    .trim()
+    .toLowerCase()
+    .regex(/^[a-z0-9][a-z0-9-]{0,78}[a-z0-9]$/, "validation.catalogSlug")
+    .refine((slug) => !slug.includes("--"), "validation.catalogSlug"),
+  nameEn: name(120),
+  nameBn: name(120),
+  isActive: z.boolean(),
+});
+
 export const examTargetFormSchema = z.object({
   id: z.uuid().optional(),
   universityId: z.uuid("validation.universityRequired"),
@@ -82,3 +97,4 @@ export type CategoryFormInput = z.input<typeof categoryFormSchema>;
 export type UniversityFormInput = z.input<typeof universityFormSchema>;
 export type SubjectFormInput = z.input<typeof subjectFormSchema>;
 export type ExamTargetFormInput = z.input<typeof examTargetFormSchema>;
+export type TopicFormInput = z.input<typeof topicFormSchema>;

@@ -37,6 +37,22 @@ async function englishContext(context: BrowserContext) {
   await setLocale(context, "en");
 }
 
+async function confirmationCode(email: string): Promise<string> {
+  for (let attempt = 0; attempt < 20; attempt++) {
+    const search = await fetch(`${MAILPIT}/api/v1/search?query=${encodeURIComponent(`to:"${email}"`)}`);
+    const { messages: found } = (await search.json()) as { messages: { ID: string }[] };
+    if (found.length > 0) {
+      const message = (await (await fetch(`${MAILPIT}/api/v1/message/${found[0]!.ID}`)).json()) as {
+        Text: string;
+      };
+      const code = /\b(\d{6})\b/.exec(message.Text)?.[1];
+      if (code) return code;
+    }
+    await new Promise((resolve) => setTimeout(resolve, 500));
+  }
+  throw new Error(`No verification code for ${email}`);
+}
+
 async function confirmationLink(email: string): Promise<string> {
   for (let attempt = 0; attempt < 20; attempt++) {
     const search = await fetch(`${MAILPIT}/api/v1/search?query=${encodeURIComponent(`to:"${email}"`)}`);
@@ -105,9 +121,17 @@ test("a new self-signup student lands in the public organization's student dashb
   await page.getByLabel(en.authForms.password, { exact: true }).fill(PASSWORD);
   await page.getByLabel(messagePattern(en.authForms.acceptTerms)).check();
   await page.getByRole("button", { name: en.authForms.createAccount }).click();
-  await expect(page.getByRole("heading", { name: en.authForms.checkInboxTitle })).toBeVisible();
+  // Sign-up continues to the code screen; the code arrives in the local Mailpit inbox.
+  await expect(page).toHaveURL(/\/verify-email\?/);
+  await expect(page.getByRole("heading", { name: en.authPages.verify.title })).toBeVisible();
+  await expect(page.getByRole("button", { name: messagePattern(en.authForms.resendIn) })).toBeDisabled();
 
-  await page.goto(await confirmationLink(email));
+  await page.getByLabel(en.authForms.code).fill("000000");
+  await page.getByRole("button", { name: en.authForms.verify }).click();
+  await expect(page.getByText(en.errors.otp_invalid).first()).toBeVisible();
+
+  await page.getByLabel(en.authForms.code).fill(await confirmationCode(email));
+  await page.getByRole("button", { name: en.authForms.verify }).click();
   await expect(page).toHaveURL(/\/onboarding/);
   await page.getByRole("button", { name: en.profileForm.continue }).click();
 
@@ -211,6 +235,30 @@ test("coaching-center admin keeps their workspace and cannot manage the catalog"
     .neq("slug", "")
     .select("id");
   expect(update.data).toEqual([]);
+});
+
+test("the confirmation link still works as a fallback", async ({ page }) => {
+  const email = `e2e-link-${Date.now()}@example.com`;
+  await page.goto("/sign-up");
+  await page.getByLabel(en.authForms.fullName).fill("Link Student");
+  await page.getByLabel(en.authForms.email).fill(email);
+  await page.getByLabel(en.authForms.password, { exact: true }).fill(PASSWORD);
+  await page.getByLabel(messagePattern(en.authForms.acceptTerms)).check();
+  await page.getByRole("button", { name: en.authForms.createAccount }).click();
+  await expect(page).toHaveURL(/\/verify-email\?/);
+  await page.goto(await confirmationLink(email));
+  await expect(page).toHaveURL(/\/onboarding/);
+});
+
+test("unverified accounts cannot sign in and are offered verification", async ({ page }) => {
+  const email = `e2e-unverified-${Date.now()}@example.com`;
+  const supabase = supabaseAnon();
+  await supabase.auth.signUp({ email, password: PASSWORD });
+  await signIn(page, email);
+  await expect(page.getByText(en.errors.email_not_confirmed)).toBeVisible();
+  await page.getByRole("link", { name: en.authForms.verifyNow }).click();
+  await expect(page).toHaveURL(/\/verify-email\?email=/);
+  expect((await page.goto("/dashboard"))?.url()).toMatch(/\/sign-in\?next=/);
 });
 
 test("platform admin adds a university, sees it in both languages, then deactivates it", async ({

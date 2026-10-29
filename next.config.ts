@@ -16,6 +16,8 @@ const nextConfig: NextConfig = {
   experimental: {
     // Enables forbidden()/unauthorized() with app/forbidden.tsx for 403 responses.
     authInterrupts: true,
+    // CSV imports are capped at 1 MB in the action; allow multipart overhead.
+    serverActions: { bodySizeLimit: "2mb" },
   },
   images: {
     remotePatterns: [

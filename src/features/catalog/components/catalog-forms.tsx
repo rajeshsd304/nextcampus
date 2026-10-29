@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useTransition, type ReactNode } from "react";
-import { useForm, type FieldValues, type Path, type UseFormReturn } from "react-hook-form";
+import { useForm, useWatch, type FieldValues, type Path, type UseFormReturn } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { FormField } from "@/components/ui/form-field";
 import { Input, Select, Textarea } from "@/components/ui/input";
@@ -16,16 +16,19 @@ import {
   saveCategoryAction,
   saveExamTargetAction,
   saveSubjectAction,
+  saveTopicAction,
   saveUniversityAction,
 } from "../actions";
 import {
   categoryFormSchema,
   examTargetFormSchema,
   subjectFormSchema,
+  topicFormSchema,
   universityFormSchema,
   type CategoryFormInput,
   type ExamTargetFormInput,
   type SubjectFormInput,
+  type TopicFormInput,
   type UniversityFormInput,
 } from "../schemas";
 
@@ -320,6 +323,69 @@ export function ExamTargetForm({
           ))}
         </div>
       </fieldset>
+      <ActiveCheckbox form={form} name="isActive" />
+    </FormShell>
+  );
+}
+
+export function TopicForm({
+  defaults,
+  subjects,
+  topics,
+}: {
+  defaults: TopicFormInput;
+  subjects: { id: string; label: string }[];
+  topics: { id: string; subjectId: string; label: string }[];
+}) {
+  const t = useTranslations("catalogAdmin.form");
+  const form = useForm<TopicFormInput>({ resolver: zodResolver(topicFormSchema), defaultValues: defaults });
+  const { errors } = form.formState;
+  const subjectId = useWatch({ control: form.control, name: "subjectId" });
+  const { pending, onSubmit } = useSubmit(form, saveTopicAction, [
+    "subjectId",
+    "parentId",
+    "slug",
+    "nameEn",
+    "nameBn",
+  ]);
+  const parents = topics.filter((topic) => topic.subjectId === subjectId && topic.id !== defaults.id);
+  return (
+    <FormShell onSubmit={onSubmit} pending={pending} rootError={errors.root?.server?.message}>
+      <div className="grid gap-5 sm:grid-cols-2">
+        <FormField id="topic-subject" label={t("subject")} error={errors.subjectId?.message}>
+          <Select {...form.register("subjectId", { onChange: () => form.setValue("parentId", "") })}>
+            {subjects.map((s) => (
+              <option key={s.id} value={s.id}>
+                {s.label}
+              </option>
+            ))}
+          </Select>
+        </FormField>
+        <FormField id="topic-parent" label={t("parentTopic")} optional error={errors.parentId?.message}>
+          <Select {...form.register("parentId")}>
+            <option value="">{t("noParent")}</option>
+            {parents.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.label}
+              </option>
+            ))}
+          </Select>
+        </FormField>
+        <FormField id="topic-name-bn" label={t("nameBn")} error={errors.nameBn?.message}>
+          <Input lang="bn" {...form.register("nameBn")} />
+        </FormField>
+        <FormField id="topic-name-en" label={t("nameEn")} error={errors.nameEn?.message}>
+          <Input lang="en" {...form.register("nameEn")} />
+        </FormField>
+        <FormField
+          id="topic-slug"
+          label={t("slug")}
+          description={t("topicSlugHint")}
+          error={errors.slug?.message}
+        >
+          <Input lang="en" autoCapitalize="none" spellCheck={false} {...form.register("slug")} />
+        </FormField>
+      </div>
       <ActiveCheckbox form={form} name="isActive" />
     </FormShell>
   );

@@ -17,6 +17,9 @@ export const PERMISSIONS = [
   "dashboard.instructor",
   "dashboard.reviewer",
   "dashboard.student",
+  "questions.read",
+  "questions.author",
+  "questions.review",
 ] as const;
 
 export type Permission = (typeof PERMISSIONS)[number];
@@ -31,9 +34,12 @@ export const ROLE_PERMISSIONS: Record<OrgRole, readonly Permission[]> = {
     "invitations.manage",
     "audit.read",
     "dashboard.admin",
+    "questions.read",
+    "questions.author",
+    "questions.review",
   ],
-  instructor: ["org.read", "members.read", "dashboard.instructor"],
-  invigilator: ["org.read", "members.read", "dashboard.reviewer"],
+  instructor: ["org.read", "members.read", "dashboard.instructor", "questions.read", "questions.author"],
+  invigilator: ["org.read", "members.read", "dashboard.reviewer", "questions.read", "questions.author"],
   student: ["org.read", "dashboard.student"],
 };
 

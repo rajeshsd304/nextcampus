@@ -12,6 +12,10 @@ export async function GET(request: NextRequest) {
   const code = searchParams.get("code");
   const next = safeRedirectPath(searchParams.get("next"));
 
+  // The user cancelled on Google's consent screen.
+  if (searchParams.get("error") === "access_denied") {
+    return NextResponse.redirect(new URL("/sign-in?error=oauth_cancelled", siteUrl));
+  }
   if (searchParams.get("error") || !code) {
     return NextResponse.redirect(new URL("/sign-in?error=oauth_failed", siteUrl));
   }

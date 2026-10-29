@@ -95,7 +95,7 @@ describe("keys referenced as data", () => {
 
   it("every validation/error/form key used in code exists", () => {
     const pattern =
-      /"((?:validation|errors|common|authForms|orgForms|invitationForms|profileForm|contactForm|catalogAdmin)\.[A-Za-z_.]+)"/g;
+      /"((?:validation|errors|common|authForms|orgForms|invitationForms|profileForm|contactForm|catalogAdmin|questionForms|questionImport|questionLabels|platformAdmins)\.[A-Za-z_.]+)"/g;
     const used = new Set([...source.matchAll(pattern)].map((m) => m[1]!));
     expect(used.size).toBeGreaterThan(10);
     // A reference may be a message (leaf) or a namespace passed to useTranslations().

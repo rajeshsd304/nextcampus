@@ -1,8 +1,10 @@
 import {
   ClipboardCheck,
   GraduationCap,
+  ClipboardList,
   History,
   LayoutDashboard,
+  Library,
   Mail,
   PenSquare,
   Settings,
@@ -37,12 +39,23 @@ export default async function OrganizationLayout({ children, params }: LayoutPro
           { href: `${base}/admin/members`, label: t("members"), icon: <Users /> },
           { href: `${base}/admin/invitations`, label: t("invitations"), icon: <Mail /> },
           { href: `${base}/admin/audit`, label: t("audit"), icon: <History /> },
+          // Exact match so the review queue below is highlighted on its own.
+          { href: `${base}/questions`, label: t("questions"), icon: <Library />, exact: true },
+          ...(organization.is_system
+            ? []
+            : [{ href: `${base}/questions/review`, label: t("reviewQueue"), icon: <ClipboardList /> }]),
           { href: `${base}/admin/settings`, label: t("settings"), icon: <Settings /> },
         ];
       case "instructor":
-        return [{ href: `${base}/instructor`, label: t("instructorHome"), icon: <PenSquare /> }];
+        return [
+          { href: `${base}/instructor`, label: t("instructorHome"), icon: <PenSquare /> },
+          { href: `${base}/questions`, label: t("questions"), icon: <Library /> },
+        ];
       case "invigilator":
-        return [{ href: `${base}/review`, label: t("reviewDesk"), icon: <ClipboardCheck /> }];
+        return [
+          { href: `${base}/review`, label: t("reviewDesk"), icon: <ClipboardCheck /> },
+          { href: `${base}/questions`, label: t("questions"), icon: <Library /> },
+        ];
       case "student":
         return [{ href: `${base}/student`, label: t("studentHome"), icon: <GraduationCap /> }];
     }

@@ -32,6 +32,7 @@ export default async function CatalogAdminPage() {
     loadAdminCatalog(),
     listCatalogAudit(15),
   ]);
+  const subjectName = new Map(catalog.subjects.map((s) => [s.id, localized(s, "name", locale)]));
   const universityName = new Map(catalog.universities.map((u) => [u.id, localized(u, "name", locale)]));
   const targetCount = (universityId: string) =>
     catalog.targets.filter((x) => x.university_id === universityId).length;
@@ -62,6 +63,15 @@ export default async function CatalogAdminPage() {
         title: localized(s, "name", locale),
         subtitle: s.slug,
         active: s.is_active,
+      })),
+    },
+    {
+      segment: "topics",
+      rows: catalog.topics.map((topic) => ({
+        id: topic.id,
+        title: localized(topic, "name", locale),
+        subtitle: [subjectName.get(topic.subject_id) ?? "", topic.slug].join(" · "),
+        active: topic.is_active,
       })),
     },
     {

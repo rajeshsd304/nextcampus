@@ -94,6 +94,7 @@ const catalog: Catalog = {
       subjectIds: ["s1", "s2"],
     },
   ],
+  topics: [],
 };
 
 describe("catalog filtering", () => {

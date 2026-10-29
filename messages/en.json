@@ -105,7 +105,38 @@
     "already_exists": "An item with this address already exists.",
     "in_use": "This item is still in use. Deactivate it instead, or remove what references it first.",
     "catalog_item_not_found": "That catalog item could not be found.",
-    "unexpected": "Something went wrong. Please try again."
+    "unexpected": "Something went wrong. Please try again.",
+    "mcq_option_count": "An MCQ needs between 2 and 6 options.",
+    "mcq_answer_key_required": "Choose exactly one correct option.",
+    "question_type_mismatch": "This content doesn’t match the question type.",
+    "written_spec_required": "A written question needs an answer format.",
+    "rubric_marks_mismatch": "Rubric marks must add up to the question marks.",
+    "rubric_required": "Add at least one rubric criterion before review.",
+    "topic_subject_mismatch": "This topic belongs to a different subject.",
+    "question_type_immutable": "The question type can’t be changed.",
+    "question_owner_immutable": "The owning organization can’t be changed.",
+    "topic_parent_subject_mismatch": "A parent topic must belong to the same subject.",
+    "topic_cycle": "A topic can’t be placed inside itself.",
+    "topic_too_deep": "Topics can be nested at most 10 levels deep.",
+    "question_asset_owner_mismatch": "This image belongs to a different organization.",
+    "question_revisions_are_append_only": "Revision history can’t be changed.",
+    "question_not_found": "This question could not be found.",
+    "question_not_editable": "Only drafts can be edited.",
+    "invalid_reference": "A selected subject, topic or exam target no longer exists.",
+    "import_key_taken": "Another question already uses this external_id.",
+    "invalid_transition": "That change isn’t possible from the question’s current status.",
+    "reason_required": "Explain the reason for rejecting.",
+    "both_languages_required": "Complete both Bangla and English before this step.",
+    "language_incomplete": "Complete the question in at least one language: text, every option or criterion, and the explanation or model answer.",
+    "invalid_asset_path": "That image path is not valid for this question.",
+    "asset_not_uploaded": "The image upload didn’t finish. Please try again.",
+    "invalid_asset": "Use a PNG, JPEG or WebP image up to 2 MB.",
+    "primary_admin_protected": "The primary admin can't be removed or changed here.",
+    "platform_admin_limit_reached": "The platform already has the maximum of four admins. Revoke one first.",
+    "admin_candidate_not_found": "No verified account uses that email. The person must sign up and verify their email first.",
+    "already_platform_admin": "This person is already a platform admin.",
+    "platform_admin_not_found": "That platform admin could not be found.",
+    "otp_invalid": "That code is wrong, expired or already used. Check the latest email or request a new code."
   },
   "validation": {
     "emailRequired": "Enter your email address.",
@@ -142,7 +173,20 @@
     "catalogNameMin": "Use at least 2 characters.",
     "shortCode": "Use 1–16 characters.",
     "universityRequired": "Choose a university.",
-    "negativeMarking": "Enter a number between 0 and 1."
+    "negativeMarking": "Enter a number between 0 and 1.",
+    "marksInvalid": "Enter marks between 0.01 and 100 (up to two decimals).",
+    "limitInvalid": "Enter a whole number greater than zero.",
+    "optionCount": "An MCQ needs between 2 and 6 options.",
+    "criteriaCount": "Use at most 20 rubric criteria.",
+    "stemRequired": "Write the question in at least one language.",
+    "correctOptionRequired": "Choose the correct option.",
+    "rubricTotal": "Rubric marks must add up to the question marks.",
+    "subjectRequired": "Choose a subject.",
+    "topicRequired": "Choose a topic.",
+    "reasonRequired": "Explain the reason (at least 3 characters).",
+    "imageType": "Use a PNG, JPEG or WebP image.",
+    "imageTooLarge": "The image is larger than 2 MB.",
+    "otpFormat": "Enter the 6-digit code."
   },
   "authForms": {
     "email": "Email",
@@ -168,7 +212,16 @@
     "confirmNewPassword": "Confirm new password",
     "saving": "Saving",
     "passwordUpdated": "Your password has been updated.",
-    "confirmationResent": "If an unconfirmed account exists, we sent a new confirmation link."
+    "confirmationResent": "If an unconfirmed account exists, we sent a new confirmation link.",
+    "code": "Verification code",
+    "codeHint": "The 6-digit code from the email we sent you.",
+    "verify": "Verify email",
+    "verifying": "Verifying",
+    "noCode": "Didn’t get a code? Check your spam folder.",
+    "resendCode": "Send a new code",
+    "resendIn": "Send a new code in {seconds}s",
+    "codeResent": "If this email has an unverified account, a new code is on its way.",
+    "verifyNow": "Verify your email with a code"
   },
   "authPages": {
     "orWithEmail": "or with email",
@@ -176,7 +229,8 @@
       "oauth_failed": "Google sign-in didn’t complete. Please try again.",
       "oauth_unavailable": "Google sign-in is temporarily unavailable. Try email and password instead.",
       "link_invalid": "That link is invalid. Request a new one below.",
-      "link_expired": "That link has expired or was already used. Please sign in or request a new link."
+      "link_expired": "That link has expired or was already used. Please sign in or request a new link.",
+      "oauth_cancelled": "Google sign-in was cancelled. You can try again or use email instead."
     },
     "aside": {
       "title": "Your admission journey, organized.",
@@ -217,6 +271,13 @@
       "title": "Choose a new password",
       "signedInAs": "Signed in as {email}.",
       "submit": "Save password and continue"
+    },
+    "verify": {
+      "title": "Verify your email",
+      "description": "Enter the 6-digit code from your confirmation email.",
+      "descriptionWithEmail": "We sent a 6-digit code to <strong>{email}</strong>. Enter it below to activate your account.",
+      "mailNote": "You can also use the link in the same email.",
+      "backToSignIn": "Back to sign in"
     }
   },
   "shell": {
@@ -250,7 +311,9 @@
       "studentHome": "My preparation",
       "unavailableTitle": "{name} is unavailable",
       "orgSuspended": "This organization has been suspended by NextCampus. Contact your administrator for details.",
-      "membershipSuspended": "Your membership in this organization is suspended. Contact an organization administrator."
+      "membershipSuspended": "Your membership in this organization is suspended. Contact an organization administrator.",
+      "questions": "Question bank",
+      "reviewQueue": "Review queue"
     }
   },
   "orgs": {
@@ -314,6 +377,22 @@
       "public_welcome": {
         "title": "Welcome to NextCampus",
         "body": "Your practice space is ready. Explore the admission catalog while practice exams are being prepared."
+      },
+      "question_rejected": {
+        "title": "A question you wrote needs changes",
+        "body": "Reviewer’s note: {reason}"
+      },
+      "question_published": {
+        "title": "A question you wrote was published",
+        "body": "It is now available in the question bank."
+      },
+      "platform_admin_granted": {
+        "title": "You are now a NextCampus platform admin",
+        "body": "Open the platform console from your account menu."
+      },
+      "platform_admin_revoked": {
+        "title": "Your platform admin access was removed",
+        "body": "Contact the primary admin if you think this is a mistake."
       }
     }
   },
@@ -512,6 +591,12 @@
         "description": "Groups such as general, engineering or medical. New categories need no code change.",
         "add": "Add category",
         "edit": "Edit category"
+      },
+      "topics": {
+        "title": "Topics",
+        "description": "Chapters within each subject, used to organize questions. Topics can be nested one inside another.",
+        "add": "Add topic",
+        "edit": "Edit topic"
       }
     },
     "row": {
@@ -552,7 +637,11 @@
       "formatEn": "Typical format (English)",
       "negativeMarking": "Default negative marking",
       "negativeMarkingHint": "Marks deducted per wrong MCQ answer (0 to 1), e.g. 0.25.",
-      "subjects": "Subjects"
+      "subjects": "Subjects",
+      "subject": "Subject",
+      "parentTopic": "Parent topic",
+      "noParent": "None (top level)",
+      "topicSlugHint": "Unique, e.g. physics-mechanics. Used in CSV imports."
     }
   },
   "audit": {
@@ -630,6 +719,40 @@
         "deleted": "Exam target deleted",
         "reordered": "Exam target reordered",
         "subjects_changed": "Exam target subjects changed"
+      },
+      "question": {
+        "created": "Question created",
+        "updated": "Question edited",
+        "submit": "Question submitted for review",
+        "withdraw": "Question withdrawn",
+        "reject": "Question rejected",
+        "publish": "Question published",
+        "archive": "Question archived",
+        "restore": "Question restored",
+        "asset_added": "Question image added",
+        "asset_removed": "Question image removed"
+      },
+      "topic": {
+        "created": "Topic created",
+        "updated": "Topic updated",
+        "activated": "Topic activated",
+        "deactivated": "Topic deactivated",
+        "deleted": "Topic deleted",
+        "reordered": "Topic reordered"
+      },
+      "content_setting": {
+        "created": "Content setting created",
+        "updated": "Content setting updated",
+        "activated": "Content setting activated",
+        "deactivated": "Content setting deactivated",
+        "deleted": "Content setting deleted",
+        "reordered": "Content setting reordered"
+      },
+      "platform_admin": {
+        "granted": "Platform admin granted",
+        "revoked": "Platform admin revoked",
+        "primary_bootstrapped": "Primary admin set up",
+        "primary_transferred": "Primary admin transferred"
       }
     }
   },
@@ -1333,7 +1456,9 @@
     "nav": {
       "label": "Platform",
       "overview": "Overview",
-      "catalog": "Admission catalog"
+      "catalog": "Admission catalog",
+      "questions": "Public question bank",
+      "admins": "Platform admins"
     },
     "console": {
       "eyebrow": "Platform Admin",
@@ -1394,5 +1519,347 @@
     "signIn": "Sign in",
     "verifyFirst": "Verify your email address first, then return to this link.",
     "signedInAs": "Signed in as {email}"
+  },
+  "questionLabels": {
+    "types": {
+      "mcq": "MCQ",
+      "written": "Written"
+    },
+    "statuses": {
+      "draft": "Draft",
+      "in_review": "In review",
+      "published": "Published",
+      "archived": "Archived"
+    },
+    "difficulties": {
+      "easy": "Easy",
+      "medium": "Medium",
+      "hard": "Hard"
+    },
+    "answerModes": {
+      "text": "Typed answer",
+      "image": "Photo of handwritten answer",
+      "both": "Typed or photo"
+    },
+    "languages": {
+      "bnShort": "বাং",
+      "enShort": "EN",
+      "bnComplete": "Bangla complete",
+      "bnIncomplete": "Bangla incomplete",
+      "enComplete": "English complete",
+      "enIncomplete": "English incomplete"
+    },
+    "languageFilters": {
+      "both": "Both languages complete",
+      "bn": "Bangla only",
+      "en": "English only",
+      "incomplete": "Neither complete"
+    }
+  },
+  "questions": {
+    "bank": {
+      "public": "Public question bank",
+      "private": "Organization question bank"
+    },
+    "nav": {
+      "review": "Review queue ({count})",
+      "import": "Import CSV",
+      "newWritten": "New written",
+      "newMcq": "New MCQ"
+    },
+    "breadcrumb": "Breadcrumb",
+    "back": "← Question bank",
+    "list": {
+      "title": "Question bank",
+      "description": "MCQ and written questions with answer keys, model answers and rubrics. Only people in this organization can see them.",
+      "emptyTitle": "No questions match",
+      "emptyBody": "Write a new question, import a CSV, or change the filters.",
+      "noStem": "(No question text yet)",
+      "open": "Open question",
+      "marks": "Marks: {marks}",
+      "updated": "Updated {date}",
+      "pagination": "Question pages",
+      "firstPage": "← First page",
+      "nextPage": "Next page →"
+    },
+    "review": {
+      "title": "Review queue",
+      "description": "Questions submitted for review. Approve to publish, or reject with a reason so the author can fix them."
+    },
+    "filters": {
+      "legend": "Filter questions",
+      "subject": "Subject",
+      "topic": "Topic",
+      "examTarget": "Exam target",
+      "type": "Type",
+      "difficulty": "Difficulty",
+      "status": "Status",
+      "language": "Languages",
+      "all": "All",
+      "apply": "Apply",
+      "clear": "Clear"
+    },
+    "view": {
+      "language": {
+        "bn": "বাংলা",
+        "en": "English"
+      },
+      "missing": "Not written yet",
+      "stem": "Question",
+      "options": "Options",
+      "correct": "Correct",
+      "explanation": "Explanation",
+      "modelAnswer": "Model answer",
+      "guidance": "Marking guidance",
+      "rubric": "Rubric",
+      "marksShort": "{marks} marks",
+      "answerMode": "Answer format:",
+      "answerModes": {
+        "text": "Typed answer",
+        "image": "Photo of handwritten answer",
+        "both": "Typed or photo"
+      },
+      "wordLimit": "Word limit: {count}",
+      "charLimit": "Character limit: {count}",
+      "images": "Images"
+    },
+    "history": {
+      "title": "Revision history",
+      "description": "Every content edit and status change is kept as an unchangeable snapshot.",
+      "empty": "No revisions yet.",
+      "revision": "Revision {number}",
+      "kinds": {
+        "created": "Created",
+        "content": "Content edited",
+        "status": "Status changed"
+      },
+      "by": "{actor} · {date}",
+      "system": "System",
+      "reason": "Reason:"
+    },
+    "detail": {
+      "metaTitle": "Question",
+      "title": {
+        "mcq": "MCQ question",
+        "written": "Written question"
+      },
+      "meta": "By {author} · updated {date}",
+      "unknownAuthor": "unknown author",
+      "edit": "Edit draft",
+      "published": "Published {date}",
+      "publicReviewNote": "Public bank questions are approved and published by NextCampus platform admins."
+    },
+    "editor": {
+      "newTitle": "New question",
+      "new": {
+        "mcq": "New MCQ question",
+        "written": "New written question"
+      },
+      "newDescription": "Write in Bangla, English or both. Drafts are private to your organization until published.",
+      "noTaxonomyTitle": "No subjects or topics yet",
+      "noTaxonomyBody": "A platform admin needs to add subjects and topics before questions can be written.",
+      "edit": "Edit question",
+      "editDescription": "Only drafts can be edited. Every save is kept in the revision history.",
+      "notEditableTitle": "This question can’t be edited",
+      "notYourDraft": "Instructors/Graders can edit only their own drafts. Ask an organization admin.",
+      "notDraft": "Only drafts can be edited. Withdraw, reject or restore it to a draft first.",
+      "viewQuestion": "View question",
+      "backToQuestion": "← Back to question",
+      "duplicatesTitle": "Possible duplicates found: {count}",
+      "duplicateLink": "Possible duplicate {number}",
+      "imagesTitle": "Images",
+      "imagesDescription": "PNG, JPEG or WebP up to 2 MB, stored privately. Add alt text in both languages."
+    },
+    "import": {
+      "title": "Import questions from CSV",
+      "description": "Add many MCQ and written questions at once. Run a dry run first to check every row.",
+      "guideTitle": "How the template works",
+      "guideDescription": "Download the template, fill it in a spreadsheet and save it as CSV (UTF-8).",
+      "guide": {
+        "rows": "One row per question. type is mcq or written. external_id is your own unique id for the row.",
+        "slugs": "subject, topic and exam_target use the slugs shown in the admission catalog.",
+        "mcq": "MCQ: fill option_a … option_f (2–6 options, bn and/or en), correct_option (A–F) and the explanations.",
+        "written": "Written: answer_mode, optional limits, model answers and up to 6 rubric criteria whose marks add up to the question marks.",
+        "idempotent": "Re-importing the same file is safe: rows are matched by external_id, drafts are updated and published questions are skipped.",
+        "limits": "Up to 500 rows and 1 MB per file. Imported questions start as drafts."
+      },
+      "allColumns": "All template columns"
+    }
+  },
+  "questionForms": {
+    "saved": "Draft saved.",
+    "preview": "Preview",
+    "lang": {
+      "bn": "বাংলা",
+      "en": "English"
+    },
+    "sections": {
+      "classification": "Classification",
+      "question": "Question",
+      "options": "Options and answer key",
+      "answer": "Answer format and model answer",
+      "rubric": "Rubric"
+    },
+    "subject": "Subject",
+    "topic": "Topic",
+    "noTopics": "No topics for this subject",
+    "examTarget": "Exam target",
+    "noExamTarget": "Not specific to one exam",
+    "difficulty": "Difficulty",
+    "marks": "Marks",
+    "sourceNote": "Source note",
+    "sourceNoteHint": "Internal note, e.g. where the question comes from.",
+    "mathHint": "Write math between $ signs, e.g. $x^2 + y^2$, or $$ for a centered formula. Use \\$ for a dollar sign.",
+    "stem": "Question text",
+    "optionsHint": "Between {min} and {max} options. Choose the one correct answer.",
+    "correctOption": "Correct option",
+    "optionLabel": "Option {label}",
+    "correct": "Correct answer",
+    "removeOption": "Remove option {label}",
+    "addOption": "Add option",
+    "explanation": "Explanation (shown after answering)",
+    "answerMode": "Answer format",
+    "wordLimit": "Word limit",
+    "charLimit": "Character limit",
+    "modelAnswer": "Model answer (graders only)",
+    "rubricTotal": "Rubric total: {total} of {marks} marks",
+    "guidance": "Marking guidance",
+    "criterionLabel": "Criterion {number}",
+    "removeCriterion": "Remove criterion {number}",
+    "criterionMarks": "Marks",
+    "addCriterion": "Add criterion",
+    "saving": "Saving",
+    "saveDraft": "Save draft",
+    "cancel": "Cancel",
+    "duplicatesTitle": "Possible duplicates",
+    "duplicatesBody": "Questions with the same text already exist. Your draft was saved — check whether you still need it.",
+    "duplicateLink": "Possible duplicate {number}",
+    "transitionDone": {
+      "submit": "Submitted for review.",
+      "withdraw": "Withdrawn to draft.",
+      "reject": "Sent back to the author.",
+      "publish": "Published.",
+      "archive": "Archived.",
+      "restore": "Restored to draft."
+    },
+    "transitions": {
+      "working": "Working",
+      "cancel": "Cancel",
+      "reasonRequired": "Reason for the author (required)",
+      "reasonOptional": "Reason (optional)",
+      "actions": {
+        "submit": "Submit for review",
+        "withdraw": "Withdraw to draft",
+        "reject": "Reject",
+        "publish": "Approve and publish",
+        "archive": "Archive",
+        "restore": "Restore to draft"
+      },
+      "dialogs": {
+        "reject": {
+          "title": "Send back to the author?",
+          "description": "The question returns to draft. Explain what needs to change."
+        },
+        "archive": {
+          "title": "Archive this question?",
+          "description": "Archived questions are hidden from students and kept with their full history."
+        }
+      }
+    },
+    "assets": {
+      "added": "Image added.",
+      "removed": "Image removed.",
+      "chooseFile": "Choose an image first.",
+      "uploadFailed": "The upload failed. Please try again.",
+      "noAlt": "No alt text",
+      "remove": "Remove image",
+      "empty": "No images yet.",
+      "file": "Image file",
+      "fileHint": "PNG, JPEG or WebP, up to 2 MB.",
+      "altBn": "Alt text (Bangla)",
+      "altEn": "Alt text (English)",
+      "uploading": "Uploading",
+      "upload": "Upload image"
+    }
+  },
+  "questionImport": {
+    "file": "CSV file",
+    "fileHint": "UTF-8 CSV, up to 500 rows and 1 MB.",
+    "dryRun": "Dry run (check only)",
+    "dryRunHint": "Validate every row and show duplicates without saving anything.",
+    "processing": "Processing",
+    "submit": "Check and import",
+    "template": "Download template",
+    "reportDryRun": "Dry run report — nothing was saved",
+    "reportImported": "Import report",
+    "summary": "{outcome}: {count}",
+    "tableCaption": "Result for each row of the file",
+    "columns": {
+      "row": "Row",
+      "externalId": "external_id",
+      "outcome": "Result",
+      "details": "Details"
+    },
+    "rowNumber": "{row}",
+    "outcomes": {
+      "valid": "Ready to import",
+      "created": "Created",
+      "updated": "Updated",
+      "unchanged": "Unchanged",
+      "skipped": "Skipped",
+      "error": "Error"
+    },
+    "duplicates": "Possible duplicates: {count}",
+    "issues": {
+      "fileRequired": "Choose a CSV file.",
+      "fileTooLarge": "The file is larger than 1 MB.",
+      "fileType": "Upload a .csv file.",
+      "malformed": "The file could not be read as CSV. Check quotes and separators.",
+      "missingColumns": "Required columns are missing.",
+      "empty": "The file has no rows.",
+      "tooManyRows": "The file has more than 500 rows. Split it into smaller files.",
+      "notDraft": "Already exists and is not a draft, so it was left unchanged.",
+      "externalIdInvalid": "Use 1–100 letters, numbers, dots, colons, dashes or underscores.",
+      "externalIdRepeated": "This external_id appears more than once in the file.",
+      "typeInvalid": "type must be mcq or written.",
+      "subjectUnknown": "Unknown subject slug.",
+      "topicUnknown": "Unknown topic slug.",
+      "topicSubjectMismatch": "This topic belongs to a different subject.",
+      "examTargetUnknown": "Unknown exam target slug.",
+      "difficultyInvalid": "difficulty must be easy, medium or hard.",
+      "answerModeInvalid": "answer_mode must be text, image or both.",
+      "correctOptionInvalid": "correct_option must be a letter from A to F."
+    }
+  },
+  "platformAdmins": {
+    "eyebrow": "Platform Admin",
+    "title": "Platform admins",
+    "description": "At most {max} platform admins: the primary admin and up to {additional} additional admins. Only the primary admin can add or remove admins.",
+    "noPrimaryTitle": "No primary admin yet",
+    "noPrimaryBody": "A database operator must run the primary-admin bootstrap for a verified account (see README › Platform administrators).",
+    "readOnly": "Only the primary admin can add or remove platform admins.",
+    "listTitle": "Current admins",
+    "seats": "Additional admin seats used: {used} of {max}",
+    "unknown": "Unknown user",
+    "you": "(you)",
+    "primary": "Primary admin",
+    "additional": "Additional admin",
+    "since": "Since {date}",
+    "primaryProtected": "The primary admin can’t be removed here.",
+    "addTitle": "Add an admin",
+    "addDescription": "The person must already have a NextCampus account with a verified email.",
+    "limitReached": "All {max} seats are taken. Revoke an additional admin to add someone else.",
+    "emailLabel": "Account email",
+    "emailHint": "Platform admins can manage the catalog, the public question bank and all organizations.",
+    "grant": "Make platform admin",
+    "granting": "Granting",
+    "grantTitle": "Grant platform admin access?",
+    "grantDescription": "{email} will be able to manage the catalog, the public question bank and every organization.",
+    "revoke": "Revoke",
+    "revokeNamed": "Revoke admin access for {name}",
+    "revokeTitle": "Revoke admin access for {name}?",
+    "revokeDescription": "They lose platform admin access immediately. Their account and organization memberships are kept.",
+    "granted": "Platform admin access granted.",
+    "revoked": "Platform admin access revoked."
   }
 }

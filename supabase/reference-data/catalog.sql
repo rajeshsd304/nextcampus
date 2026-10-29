@@ -158,3 +158,46 @@ from mapping m
 join public.exam_targets t on t.slug like m.target_pattern
 join public.subjects s on s.slug = m.subject_slug
 on conflict do nothing;
+
+-- Topics (Phase 2) -------------------------------------------------------------
+-- Starter topics per subject (by subject slug). Questions must reference a topic,
+-- so every starter subject has at least one. Platform admins manage the rest.
+with starter (subject_slug, slug, name_en, name_bn, sort_order) as (
+  values
+    ('physics', 'physics-mechanics', 'Mechanics', 'বলবিজ্ঞান', 10),
+    ('physics', 'physics-heat-thermodynamics', 'Heat and thermodynamics', 'তাপ ও তাপগতিবিদ্যা', 20),
+    ('physics', 'physics-waves-sound', 'Waves and sound', 'তরঙ্গ ও শব্দ', 30),
+    ('physics', 'physics-electricity-magnetism', 'Electricity and magnetism', 'তড়িৎ ও চুম্বকত্ব', 40),
+    ('physics', 'physics-modern-physics', 'Modern physics', 'আধুনিক পদার্থবিজ্ঞান', 50),
+    ('chemistry', 'chemistry-atomic-structure', 'Atomic structure', 'পরমাণুর গঠন', 10),
+    ('chemistry', 'chemistry-chemical-bonding', 'Chemical bonding', 'রাসায়নিক বন্ধন', 20),
+    ('chemistry', 'chemistry-organic', 'Organic chemistry', 'জৈব রসায়ন', 30),
+    ('chemistry', 'chemistry-quantitative', 'Quantitative chemistry', 'পরিমাণগত রসায়ন', 40),
+    ('higher-mathematics', 'math-algebra', 'Algebra', 'বীজগণিত', 10),
+    ('higher-mathematics', 'math-calculus', 'Calculus', 'ক্যালকুলাস', 20),
+    ('higher-mathematics', 'math-geometry-vectors', 'Geometry and vectors', 'জ্যামিতি ও ভেক্টর', 30),
+    ('higher-mathematics', 'math-trigonometry', 'Trigonometry', 'ত্রিকোণমিতি', 40),
+    ('biology', 'biology-cell-biology', 'Cell biology', 'কোষ জীববিজ্ঞান', 10),
+    ('biology', 'biology-genetics', 'Genetics', 'জিনতত্ত্ব', 20),
+    ('biology', 'biology-human-physiology', 'Human physiology', 'মানব শারীরতত্ত্ব', 30),
+    ('biology', 'biology-plant-biology', 'Plant biology', 'উদ্ভিদ জীববিজ্ঞান', 40),
+    ('bangla', 'bangla-grammar', 'Grammar', 'ব্যাকরণ', 10),
+    ('bangla', 'bangla-literature', 'Literature', 'সাহিত্য', 20),
+    ('english', 'english-grammar', 'Grammar', 'ব্যাকরণ', 10),
+    ('english', 'english-vocabulary', 'Vocabulary', 'শব্দভান্ডার', 20),
+    ('english', 'english-comprehension', 'Reading comprehension', 'পঠন ও অনুধাবন', 30),
+    ('general-knowledge', 'gk-bangladesh', 'Bangladesh affairs', 'বাংলাদেশ বিষয়াবলি', 10),
+    ('general-knowledge', 'gk-international', 'International affairs', 'আন্তর্জাতিক বিষয়াবলি', 20),
+    ('ict', 'ict-number-systems', 'Number systems and logic', 'সংখ্যা পদ্ধতি ও লজিক', 10),
+    ('ict', 'ict-programming', 'Programming', 'প্রোগ্রামিং', 20),
+    ('accounting', 'accounting-fundamentals', 'Accounting fundamentals', 'হিসাববিজ্ঞানের মৌলিক ধারণা', 10),
+    ('business-management', 'management-fundamentals', 'Management fundamentals', 'ব্যবস্থাপনার মৌলিক ধারণা', 10),
+    ('finance-banking', 'finance-fundamentals', 'Finance fundamentals', 'ফিন্যান্সের মৌলিক ধারণা', 10),
+    ('economics', 'economics-micro', 'Microeconomics', 'ব্যষ্টিক অর্থনীতি', 10),
+    ('economics', 'economics-macro', 'Macroeconomics', 'সামষ্টিক অর্থনীতি', 20)
+)
+insert into public.topics (subject_id, slug, name_en, name_bn, sort_order)
+select s.id, t.slug, t.name_en, t.name_bn, t.sort_order
+from starter t
+join public.subjects s on s.slug = t.subject_slug
+on conflict (slug) do nothing;

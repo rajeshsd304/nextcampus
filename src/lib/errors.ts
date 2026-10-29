@@ -44,6 +44,9 @@ export function errorCodeFromAuth(error: { code?: string; status?: number } | nu
     case "reauthentication_needed":
     case "reauthentication_not_valid":
       return "reauthentication_needed";
+    // Supabase reports wrong, expired and already-used codes the same way.
+    case "otp_expired":
+      return "otp_invalid";
     case "over_request_rate_limit":
     case "over_email_send_rate_limit":
       return "rate_limited";

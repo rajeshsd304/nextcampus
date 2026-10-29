@@ -24,7 +24,10 @@ export type Viewer = {
   user: { id: string; email: string; providers: string[]; emailConfirmed: boolean };
   profile: Profile;
   memberships: Membership[];
+  /** Any platform admin (row in public.platform_admins). */
   isSuperAdmin: boolean;
+  /** The single primary platform admin (manages the other admins). */
+  isPrimaryAdmin: boolean;
 };
 
 /** Authenticated user, verified against Supabase Auth (not just the cookie). */
@@ -49,7 +52,7 @@ export const getViewer = cache(async (): Promise<Viewer | null> => {
       )
       .eq("user_id", user.id)
       .order("joined_at", { ascending: true }),
-    supabase.from("platform_admins").select("user_id").eq("user_id", user.id).maybeSingle(),
+    supabase.from("platform_admins").select("user_id, is_primary").eq("user_id", user.id).maybeSingle(),
   ]);
 
   if (profileRes.error) throw new Error(`Failed to load profile: ${profileRes.error.message}`);
@@ -85,6 +88,7 @@ export const getViewer = cache(async (): Promise<Viewer | null> => {
     profile: profileRes.data,
     memberships,
     isSuperAdmin: Boolean(adminRes.data),
+    isPrimaryAdmin: Boolean(adminRes.data?.is_primary),
   };
 });
 
@@ -99,6 +103,11 @@ export async function requireViewer(
   if (!viewer) {
     redirect(`/sign-in?next=${encodeURIComponent(options.returnTo ?? "/dashboard")}`);
   }
+  // Defense in depth: with confirmations on, Supabase does not issue sessions to
+  // unverified email accounts, but never serve protected pages to one.
+  if (!viewer.user.emailConfirmed) {
+    redirect(`/verify-email?email=${encodeURIComponent(viewer.user.email)}`);
+  }
   if (!options.allowIncompleteProfile && !viewer.profile.onboarded_at) {
     redirect(options.returnTo ? `/onboarding?next=${encodeURIComponent(options.returnTo)}` : "/onboarding");
   }
@@ -108,6 +117,13 @@ export async function requireViewer(
 export async function requireSuperAdmin(): Promise<Viewer> {
   const viewer = await requireViewer({ returnTo: "/platform" });
   if (!viewer.isSuperAdmin) forbidden();
+  return viewer;
+}
+
+/** Platform admin management is restricted to the primary admin. */
+export async function requirePrimaryAdmin(): Promise<Viewer> {
+  const viewer = await requireSuperAdmin();
+  if (!viewer.isPrimaryAdmin) forbidden();
   return viewer;
 }
 

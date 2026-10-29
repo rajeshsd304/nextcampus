@@ -102,3 +102,78 @@ insert into public.notifications (user_id, organization_id, kind, template, para
    'Welcome to NextCampus', 'Your student workspace is ready. Exams published by your instructors will appear here.', '/dashboard'),
   ('00000000-0000-4000-8000-000000000008', null, 'system', 'public_welcome', '{}',
    'Welcome to NextCampus', 'Your practice space is ready.', '/dashboard');
+
+-- ---------------------------------------------------------------------------
+-- Phase 2: sample questions (non-production), created through the real RPCs
+-- as the seeded authors, so revisions, audit and integrity rules all apply.
+-- Subjects/topics are looked up from reference data, not hard-coded ids.
+-- ---------------------------------------------------------------------------
+do $$
+declare
+  v_subject uuid;
+  v_topic uuid;
+  v_question uuid;
+  v_public uuid := (select id from public.organizations where is_system and slug = 'public');
+begin
+  select t.subject_id, t.id into v_subject, v_topic
+  from public.topics t join public.subjects s on s.id = t.subject_id
+  where t.is_active and s.is_active
+  order by s.sort_order, t.sort_order
+  limit 1;
+  if v_topic is null then
+    return;
+  end if;
+
+  -- Northbridge instructor: an MCQ draft.
+  perform set_config('request.jwt.claims', '{"sub":"00000000-0000-4000-8000-000000000003","role":"authenticated"}', true);
+  perform public.save_question(null, '10000000-0000-4000-8000-000000000001', jsonb_build_object(
+    'type', 'mcq', 'subject_id', v_subject, 'topic_id', v_topic, 'difficulty', 'easy', 'marks', 1,
+    'stem_bn', 'একটি বস্তু স্থির অবস্থা থেকে $a = 2\,\mathrm{m/s^2}$ ত্বরণে চলে। $5$ সেকেন্ড পর এর বেগ কত?',
+    'stem_en', 'A body starts from rest with acceleration $a = 2\,\mathrm{m/s^2}$. What is its velocity after $5$ s?',
+    'import_key', 'seed-mcq-1',
+    'mcq', jsonb_build_object(
+      'options', jsonb_build_array(
+        jsonb_build_object('text_bn', '৫ মি/সে', 'text_en', '5 m/s'),
+        jsonb_build_object('text_bn', '১০ মি/সে', 'text_en', '10 m/s'),
+        jsonb_build_object('text_bn', '২০ মি/সে', 'text_en', '20 m/s'),
+        jsonb_build_object('text_bn', '২৫ মি/সে', 'text_en', '25 m/s')),
+      'correct_index', 1,
+      'explanation_bn', '$v = u + at = 0 + 2 \times 5 = 10$ মি/সে।',
+      'explanation_en', '$v = u + at = 0 + 2 \times 5 = 10$ m/s.')));
+
+  -- Northbridge instructor: a written question submitted for review.
+  select question_id into v_question from public.save_question(null, '10000000-0000-4000-8000-000000000001', jsonb_build_object(
+    'type', 'written', 'subject_id', v_subject, 'topic_id', v_topic, 'difficulty', 'medium', 'marks', 5,
+    'stem_bn', 'নিউটনের গতির প্রথম সূত্রটি লেখো এবং একটি উদাহরণ দাও।',
+    'stem_en', 'State Newton''s first law of motion and give one example.',
+    'import_key', 'seed-written-1',
+    'written', jsonb_build_object(
+      'answer_mode', 'text', 'word_limit', 150,
+      'model_answer_bn', 'বাহ্যিক বল প্রয়োগ না করলে স্থির বস্তু স্থির থাকে এবং গতিশীল বস্তু সুষম বেগে চলতে থাকে।',
+      'model_answer_en', 'An object stays at rest or in uniform motion unless acted on by an external force.',
+      'criteria', jsonb_build_array(
+        jsonb_build_object('text_bn', 'সূত্রের সঠিক বিবৃতি', 'text_en', 'Correct statement of the law', 'max_marks', 3),
+        jsonb_build_object('text_bn', 'প্রাসঙ্গিক উদাহরণ', 'text_en', 'A relevant example', 'max_marks', 2)))));
+  perform public.transition_question(v_question, 'submit', null);
+
+  -- Platform admin: a published public-bank MCQ (both languages complete).
+  perform set_config('request.jwt.claims', '{"sub":"00000000-0000-4000-8000-000000000001","role":"authenticated"}', true);
+  select question_id into v_question from public.save_question(null, v_public, jsonb_build_object(
+    'type', 'mcq', 'subject_id', v_subject, 'topic_id', v_topic, 'difficulty', 'medium', 'marks', 1,
+    'stem_bn', 'নিচের কোনটি ভেক্টর রাশি?',
+    'stem_en', 'Which of the following is a vector quantity?',
+    'import_key', 'seed-public-mcq-1',
+    'mcq', jsonb_build_object(
+      'options', jsonb_build_array(
+        jsonb_build_object('text_bn', 'ভর', 'text_en', 'Mass'),
+        jsonb_build_object('text_bn', 'সরণ', 'text_en', 'Displacement'),
+        jsonb_build_object('text_bn', 'তাপমাত্রা', 'text_en', 'Temperature')),
+      'correct_index', 1,
+      'explanation_bn', 'সরণের মান ও দিক দুটোই আছে, তাই এটি ভেক্টর রাশি।',
+      'explanation_en', 'Displacement has both magnitude and direction, so it is a vector.')));
+  perform public.transition_question(v_question, 'submit', null);
+  perform public.transition_question(v_question, 'publish', null);
+
+  perform set_config('request.jwt.claims', '', true);
+end;
+$$;

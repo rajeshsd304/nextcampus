@@ -27,5 +27,9 @@ export const CLIENT_NAMESPACES = [
   "profileForm",
   "contactForm",
   "catalogAdmin",
+  "questionForms",
+  "questionImport",
+  "questionLabels",
+  "platformAdmins",
   "errorPage",
 ] as const satisfies readonly (keyof Messages)[];

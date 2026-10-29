@@ -20,7 +20,13 @@ export function Divider({ label }: { label: string }) {
 }
 
 /** `?error=` codes the auth pages understand. Text: messages `authPages.urlErrors.<code>`. */
-export const AUTH_URL_ERRORS = ["oauth_failed", "oauth_unavailable", "link_invalid", "link_expired"] as const;
+export const AUTH_URL_ERRORS = [
+  "oauth_failed",
+  "oauth_cancelled",
+  "oauth_unavailable",
+  "link_invalid",
+  "link_expired",
+] as const;
 export type AuthUrlError = (typeof AUTH_URL_ERRORS)[number];
 
 export function isAuthUrlError(value: unknown): value is AuthUrlError {

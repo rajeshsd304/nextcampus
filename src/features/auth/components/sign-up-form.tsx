@@ -1,12 +1,11 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { MailCheck } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { useState, useTransition } from "react";
+import { useTransition } from "react";
 import { useForm } from "react-hook-form";
-import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { FormField } from "@/components/ui/form-field";
 import { Input } from "@/components/ui/input";
@@ -24,7 +23,7 @@ export function SignUpForm({ next }: { next?: string | undefined }) {
   const t = useTranslations("authForms");
   const text = useMessageText();
   const [pending, startTransition] = useTransition();
-  const [sentTo, setSentTo] = useState<string | null>(null);
+  const router = useRouter();
   const form = useForm<SignUpInput>({
     resolver: zodResolver(signUpSchema),
     defaultValues: { fullName: "", email: "", password: "", acceptTerms: false, next },
@@ -35,31 +34,12 @@ export function SignUpForm({ next }: { next?: string | undefined }) {
     startTransition(async () => {
       const result = await signUpAction(values);
       if (!result) return;
-      if (result.ok) setSentTo(result.data.email);
-      else applyActionErrors(form, result, ["fullName", "email", "password", "acceptTerms"]);
+      if (result.ok) {
+        const params = new URLSearchParams({ email: result.data.email, next: result.data.next, sent: "1" });
+        router.push(`/verify-email?${params.toString()}`);
+      } else applyActionErrors(form, result, ["fullName", "email", "password", "acceptTerms"]);
     });
   });
-
-  if (sentTo) {
-    return (
-      <div className="space-y-4" role="status">
-        <div className="bg-accent text-accent-foreground flex size-12 items-center justify-center rounded-2xl">
-          <MailCheck className="size-6" aria-hidden="true" />
-        </div>
-        <h2 className="text-lg font-semibold">{t("checkInboxTitle")}</h2>
-        <p className="text-muted-foreground text-sm">
-          {t.rich("checkInboxBody", {
-            email: sentTo,
-            strong: (chunks) => <strong className="text-foreground">{chunks}</strong>,
-          })}
-        </p>
-        <Alert tone="info">{t("checkInboxHint")}</Alert>
-        <Button asChild variant="secondary" className="w-full">
-          <Link href={`/check-email?email=${encodeURIComponent(sentTo)}`}>{t("resendConfirmation")}</Link>
-        </Button>
-      </div>
-    );
-  }
 
   return (
     <form onSubmit={onSubmit} noValidate className="space-y-4">
