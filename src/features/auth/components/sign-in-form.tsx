@@ -1,0 +1,55 @@
+"use client";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+import Link from "next/link";
+import { useTransition } from "react";
+import { useForm } from "react-hook-form";
+import { Button } from "@/components/ui/button";
+import { FormField } from "@/components/ui/form-field";
+import { Input } from "@/components/ui/input";
+import { Spinner } from "@/components/ui/misc";
+import { applyActionErrors } from "@/lib/forms";
+import { signInWithPasswordAction } from "../actions";
+import { signInSchema, type SignInInput } from "../schemas";
+import { FormError } from "./form-error";
+import { PasswordInput } from "./password-input";
+
+export function SignInForm({ next }: { next?: string | undefined }) {
+  const [pending, startTransition] = useTransition();
+  const form = useForm<SignInInput>({
+    resolver: zodResolver(signInSchema),
+    defaultValues: { email: "", password: "", next },
+  });
+  const { errors } = form.formState;
+
+  const onSubmit = form.handleSubmit((values) => {
+    startTransition(async () => {
+      const result = await signInWithPasswordAction(values);
+      if (result && !result.ok) applyActionErrors(form, result, ["email", "password"]);
+    });
+  });
+
+  return (
+    <form onSubmit={onSubmit} noValidate className="space-y-4">
+      <FormError message={errors.root?.server?.message} />
+      <FormField id="email" label="Email" error={errors.email?.message}>
+        <Input type="email" autoComplete="email" inputMode="email" {...form.register("email")} />
+      </FormField>
+      <FormField id="password" label="Password" error={errors.password?.message}>
+        <PasswordInput autoComplete="current-password" {...form.register("password")} />
+      </FormField>
+      <div className="flex justify-end">
+        <Link
+          href="/forgot-password"
+          className="text-primary text-sm font-medium hover:underline dark:text-indigo-300"
+        >
+          Forgot password?
+        </Link>
+      </div>
+      <Button type="submit" size="lg" className="w-full" disabled={pending}>
+        {pending ? <Spinner label="Signing in" /> : null}
+        Sign in
+      </Button>
+    </form>
+  );
+}
