@@ -1,9 +1,11 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { useMessageText } from "@/i18n/use-message-text";
 import { setOrganizationStatusAction } from "../actions";
 
 export function OrganizationStatusToggle({
@@ -15,6 +17,8 @@ export function OrganizationStatusToggle({
   organizationName: string;
   status: "active" | "suspended";
 }) {
+  const t = useTranslations("orgForms.status");
+  const text = useMessageText();
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -27,7 +31,7 @@ export function OrganizationStatusToggle({
     startTransition(async () => {
       const result = await setOrganizationStatusAction({ organizationId, status: nextStatus });
       if (result.ok) router.refresh();
-      else setError(result.error.message);
+      else setError(text(`errors.${result.error.code}`) ?? null);
     });
   };
 
@@ -39,17 +43,17 @@ export function OrganizationStatusToggle({
           onOpenChange={setOpen}
           trigger={
             <Button size="sm" variant="ghost" className="text-danger" disabled={pending}>
-              Suspend
+              {t("suspend")}
             </Button>
           }
-          title={`Suspend ${organizationName}?`}
-          description="Members keep their accounts but lose all organization permissions until it is reactivated."
-          confirmLabel="Suspend organization"
+          title={t("suspendTitle", { name: organizationName })}
+          description={t("suspendDescription")}
+          confirmLabel={t("suspendConfirm")}
           onConfirm={apply}
         />
       ) : (
         <Button size="sm" variant="secondary" onClick={apply} disabled={pending}>
-          Reactivate
+          {t("reactivate")}
         </Button>
       )}
       <p aria-live="polite" className="text-danger text-xs font-medium">

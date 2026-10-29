@@ -1,4 +1,5 @@
-import { Users } from "lucide-react";
+import { Lock, Users } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Avatar } from "@/components/ui/avatar";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/misc";
@@ -9,12 +10,16 @@ export function RosterCard({
   description,
   members,
   emptyText,
+  privateRoster = false,
 }: {
   title: string;
   description: string;
   members: MemberRow[];
   emptyText: string;
+  /** System (public) organizations never expose rosters. */
+  privateRoster?: boolean;
 }) {
+  const t = useTranslations("dashboards.roster");
   return (
     <Card>
       <CardHeader>
@@ -22,8 +27,10 @@ export function RosterCard({
         <CardDescription>{description}</CardDescription>
       </CardHeader>
       <CardContent>
-        {members.length === 0 ? (
-          <EmptyState icon={<Users />} title="Nobody here yet" description={emptyText} />
+        {privateRoster ? (
+          <EmptyState icon={<Lock />} title={t("privateTitle")} description={t("privateBody")} />
+        ) : members.length === 0 ? (
+          <EmptyState icon={<Users />} title={t("emptyTitle")} description={emptyText} />
         ) : (
           <ul className="divide-border divide-y">
             {members.map((member) => {
@@ -31,7 +38,7 @@ export function RosterCard({
                 member.profile?.display_name ??
                 member.profile?.full_name ??
                 member.profile?.email ??
-                "Unknown user";
+                t("unknown");
               return (
                 <li key={member.userId} className="flex items-center gap-3 py-3">
                   <Avatar name={name} src={member.profile?.avatar_url ?? null} size="sm" />

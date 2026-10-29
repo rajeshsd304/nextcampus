@@ -1,6 +1,7 @@
 "use client";
 
 import * as DialogPrimitive from "@radix-ui/react-dialog";
+import { useTranslations } from "next-intl";
 import type { ReactNode } from "react";
 import { Button } from "./button";
 
@@ -22,6 +23,7 @@ export function ConfirmDialog({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
+  const t = useTranslations("common");
   return (
     <DialogPrimitive.Root open={open} onOpenChange={onOpenChange}>
       <DialogPrimitive.Trigger asChild>{trigger}</DialogPrimitive.Trigger>
@@ -37,7 +39,7 @@ export function ConfirmDialog({
           </DialogPrimitive.Description>
           <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
             <DialogPrimitive.Close asChild>
-              <Button variant="secondary">Cancel</Button>
+              <Button variant="secondary">{t("cancel")}</Button>
             </DialogPrimitive.Close>
             <Button variant="danger" onClick={onConfirm}>
               {confirmLabel}

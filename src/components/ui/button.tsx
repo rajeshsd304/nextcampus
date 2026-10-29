@@ -15,10 +15,11 @@ export const buttonVariants = cva(
         link: "h-auto px-0 text-primary underline-offset-4 hover:underline dark:text-indigo-300",
       },
       size: {
-        sm: "h-9 px-3",
+        // Small controls stay 44px tall on phone/tablet-sized screens (WCAG 2.5.5 / platform guidance).
+        sm: "h-11 px-3 lg:h-9",
         md: "h-11 px-4",
         lg: "h-12 px-6 text-base",
-        icon: "size-10",
+        icon: "size-11",
       },
     },
     defaultVariants: { variant: "primary", size: "md" },

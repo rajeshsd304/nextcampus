@@ -1,33 +1,35 @@
 import { z } from "zod";
 
+// Issue messages are translation keys (messages/<locale>.json → validation.*).
+
 export const emailSchema = z
   .string()
   .trim()
   .toLowerCase()
-  .min(1, "Enter your email address.")
-  .max(320, "Email address is too long.")
-  .pipe(z.email("Enter a valid email address."));
+  .min(1, "validation.emailRequired")
+  .max(320, "validation.emailTooLong")
+  .pipe(z.email("validation.emailInvalid"));
 
 /** bcrypt truncates at 72 bytes; require length plus a mix of character classes. */
 export const newPasswordSchema = z
   .string()
-  .min(10, "Use at least 10 characters.")
-  .max(72, "Use at most 72 characters.")
-  .refine((value) => /[a-z]/i.test(value) && /\d/.test(value), "Include at least one letter and one number.");
+  .min(10, "validation.passwordMin")
+  .max(72, "validation.passwordMax")
+  .refine((value) => /[a-z]/i.test(value) && /\d/.test(value), "validation.passwordComplexity");
 
 const nextSchema = z.string().max(512).optional();
 
 export const signInSchema = z.object({
   email: emailSchema,
-  password: z.string().min(1, "Enter your password.").max(72),
+  password: z.string().min(1, "validation.passwordRequired").max(72),
   next: nextSchema,
 });
 
 export const signUpSchema = z.object({
-  fullName: z.string().trim().min(1, "Enter your name.").max(120, "Name is too long."),
+  fullName: z.string().trim().min(1, "validation.nameRequired").max(120, "validation.nameTooLong"),
   email: emailSchema,
   password: newPasswordSchema,
-  acceptTerms: z.boolean().refine((value) => value, "You must accept the terms to continue."),
+  acceptTerms: z.boolean().refine((value) => value, "validation.acceptTerms"),
   next: nextSchema,
 });
 
@@ -36,11 +38,11 @@ export const forgotPasswordSchema = z.object({ email: emailSchema });
 export const newPasswordFormSchema = z
   .object({
     password: newPasswordSchema,
-    confirmPassword: z.string().min(1, "Confirm your new password."),
+    confirmPassword: z.string().min(1, "validation.confirmPasswordRequired"),
   })
   .refine((value) => value.password === value.confirmPassword, {
     path: ["confirmPassword"],
-    message: "Passwords do not match.",
+    message: "validation.passwordMismatch",
   });
 
 export type SignInInput = z.input<typeof signInSchema>;

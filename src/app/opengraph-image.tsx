@@ -1,7 +1,9 @@
 import { ImageResponse } from "next/og";
-import { siteConfig } from "@/lib/site";
+import en from "../../messages/en.json";
 
-export const alt = `${siteConfig.name} — ${siteConfig.tagline}`;
+// The OG renderer has no Bengali font loaded, so the share image uses the
+// English copy from the message file.
+export const alt = en.meta.defaultTitle;
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -32,17 +34,13 @@ export default function OpengraphImage() {
             fontSize: 36,
           }}
         >
-          N
+          {en.og.mark}
         </div>
-        NextCampus
+        {en.meta.siteName}
       </div>
       <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-        <div style={{ fontSize: 72, fontWeight: 700, lineHeight: 1.05, letterSpacing: -2 }}>
-          Secure, trusted, modern digital assessments.
-        </div>
-        <div style={{ fontSize: 30, color: "#c7d2fe" }}>
-          For universities, coaching centers, training organizations and instructors.
-        </div>
+        <div style={{ fontSize: 68, fontWeight: 700, lineHeight: 1.1, letterSpacing: -2 }}>{en.og.title}</div>
+        <div style={{ fontSize: 30, color: "#c7d2fe" }}>{en.og.subtitle}</div>
       </div>
     </div>,
     size,

@@ -30,10 +30,10 @@ export async function createOrganizationAction(input: unknown): Promise<ActionRe
       return fail(code, {
         slug: [
           code === "invalid_slug"
-            ? "That address is not valid."
+            ? "validation.slugPattern"
             : code === "slug_taken"
-              ? "That address is already in use."
-              : "That address is reserved.",
+              ? "errors.slug_taken"
+              : "validation.slugReserved",
         ],
       });
     }
@@ -68,7 +68,7 @@ export async function updateOrganizationAction(input: unknown): Promise<ActionRe
   if (!row) return fail("not_authorized");
 
   revalidatePath(`/o/${row.slug}`, "layout");
-  return ok(undefined, "Organization details saved.");
+  return ok(undefined, "orgForms.detailsSaved");
 }
 
 export async function updateMemberRoleAction(input: unknown): Promise<ActionResult> {
@@ -84,7 +84,7 @@ export async function updateMemberRoleAction(input: unknown): Promise<ActionResu
   if (error) return fail(errorCodeFromDatabase(error));
 
   revalidatePath("/", "layout");
-  return ok(undefined, "Role updated.");
+  return ok(undefined, "orgForms.roleUpdated");
 }
 
 export async function removeMemberAction(input: unknown): Promise<ActionResult> {
@@ -99,7 +99,7 @@ export async function removeMemberAction(input: unknown): Promise<ActionResult> 
   if (error) return fail(errorCodeFromDatabase(error));
 
   revalidatePath("/", "layout");
-  return ok(undefined, "Member removed.");
+  return ok(undefined, "orgForms.memberRemoved");
 }
 
 export async function leaveOrganizationAction(input: unknown): Promise<ActionResult> {
@@ -117,7 +117,7 @@ export async function leaveOrganizationAction(input: unknown): Promise<ActionRes
   if (error) return fail(errorCodeFromDatabase(error));
 
   revalidatePath("/", "layout");
-  return ok(undefined, "You left the organization.");
+  return ok(undefined, "orgForms.left");
 }
 
 export async function setOrganizationStatusAction(input: unknown): Promise<ActionResult> {
@@ -134,8 +134,17 @@ export async function setOrganizationStatusAction(input: unknown): Promise<Actio
   if (error) return fail(errorCodeFromDatabase(error));
 
   revalidatePath("/platform");
-  return ok(
-    undefined,
-    parsed.data.status === "suspended" ? "Organization suspended." : "Organization reactivated.",
-  );
+  return ok(undefined, parsed.data.status === "suspended" ? "orgForms.suspended" : "orgForms.reactivated");
+}
+
+/** Joins the public practice organization (idempotent; audited by the RPC). */
+export async function joinPublicOrganizationAction(): Promise<ActionResult> {
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase.rpc("join_public_organization");
+  if (error) return fail(errorCodeFromDatabase(error));
+  const joined = data[0];
+  if (!joined) return fail("unexpected");
+
+  revalidatePath("/", "layout");
+  redirect(`/o/${joined.organization_slug}/${ROLE_HOME_AREA.student}`);
 }

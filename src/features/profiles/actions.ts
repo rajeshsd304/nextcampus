@@ -47,5 +47,5 @@ export async function updateProfileAction(input: unknown): Promise<ActionResult>
   if (data.length === 0) return fail("not_authorized");
 
   revalidatePath("/", "layout");
-  return ok(undefined, "Profile saved.");
+  return ok(undefined, "profileForm.saved");
 }

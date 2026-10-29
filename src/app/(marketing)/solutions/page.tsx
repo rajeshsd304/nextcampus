@@ -1,90 +1,60 @@
-import { Building2, GraduationCap, Presentation, UserRound } from "lucide-react";
+import { Building2, Presentation, UserRound } from "lucide-react";
 import type { Metadata } from "next";
+import Link from "next/link";
+import { getTranslations } from "next-intl/server";
+import { Button } from "@/components/ui/button";
 import { CtaBand } from "@/features/marketing/components/cta-band";
 import { PageHero, Section } from "@/features/marketing/components/section";
 
-export const metadata: Metadata = {
-  title: "Solutions for institutions",
-  description:
-    "How universities, coaching centers, training organizations and independent instructors use NextCampus.",
-  alternates: { canonical: "/solutions" },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("solutions");
+  return {
+    title: t("metaTitle"),
+    description: t("metaDescription"),
+    alternates: { canonical: "/solutions" },
+  };
+}
 
-const solutions = [
-  {
-    icon: <GraduationCap />,
-    title: "Universities",
-    lead: "Department-level control with institution-wide accountability.",
-    points: [
-      "Separate administrator, instructor and invigilator roles",
-      "Audit trail for every role and membership change",
-      "Invite faculty and students in bulk, by email",
-    ],
-  },
-  {
-    icon: <Presentation />,
-    title: "Coaching centers",
-    lead: "Run frequent mock tests without losing track of who has access.",
-    points: [
-      "Self-serve onboarding in minutes",
-      "Expiring, single-use invitations for each batch",
-      "Students see only their own workspace",
-    ],
-  },
-  {
-    icon: <Building2 />,
-    title: "Training organizations",
-    lead: "Certification-grade oversight for professional programs.",
-    points: [
-      "Dedicated reviewer role for integrity decisions",
-      "Server-side timestamps on every sensitive action",
-      "Tenant isolation enforced in the database",
-    ],
-  },
-  {
-    icon: <UserRound />,
-    title: "Independent instructors",
-    lead: "A professional exam platform without the IT department.",
-    points: [
-      "Create your own organization for free",
-      "Sign in with Google in one click",
-      "Grow into a team by inviting co-instructors",
-    ],
-  },
-];
+const SOLUTIONS = [
+  ["coaching", <Presentation key="i" />],
+  ["institutions", <Building2 key="i" />],
+  ["instructors", <UserRound key="i" />],
+] as const;
 
-export default function SolutionsPage() {
+export default async function SolutionsPage() {
+  const t = await getTranslations("solutions");
   return (
     <>
-      <PageHero
-        eyebrow="Solutions"
-        title="Built for the way your institution assesses"
-        description="From a single tutor to a multi-campus university, NextCampus adapts to your structure without compromising on security."
-      />
+      <PageHero eyebrow={t("eyebrow")} title={t("title")} description={t("description")} />
       <Section>
-        <div className="grid gap-6 lg:grid-cols-2">
-          {solutions.map((solution) => (
-            <article
-              key={solution.title}
-              className="border-border bg-surface rounded-2xl border p-7 shadow-xs"
-            >
+        <div className="grid gap-6 lg:grid-cols-3">
+          {SOLUTIONS.map(([key, icon]) => (
+            <article key={key} className="border-border bg-surface rounded-2xl border p-7 shadow-xs">
               <div className="flex items-center gap-3">
                 <div className="bg-accent text-accent-foreground flex size-11 items-center justify-center rounded-xl [&_svg]:size-5">
-                  {solution.icon}
+                  {icon}
                 </div>
-                <h2 className="font-display text-xl font-semibold">{solution.title}</h2>
+                <h2 className="font-display text-xl font-semibold">{t(`items.${key}.title`)}</h2>
               </div>
-              <p className="text-muted-foreground mt-4">{solution.lead}</p>
+              <p className="text-muted-foreground mt-4">{t(`items.${key}.lead`)}</p>
               <ul className="mt-5 space-y-2.5 text-sm">
-                {solution.points.map((point) => (
+                {(t.raw(`items.${key}.points`) as string[]).map((point) => (
                   <li key={point} className="flex gap-2.5">
-                    <span className="bg-primary mt-1.5 size-1.5 shrink-0 rounded-full" aria-hidden="true" />
+                    <span className="bg-primary mt-2 size-1.5 shrink-0 rounded-full" aria-hidden="true" />
                     {point}
                   </li>
                 ))}
               </ul>
             </article>
           ))}
+        </div>
+        <div className="mt-10 flex flex-col gap-3 sm:flex-row">
+          <Button asChild>
+            <Link href="/sign-up">{t("primary")}</Link>
+          </Button>
+          <Button asChild variant="secondary">
+            <Link href="/contact?topic=partnership">{t("secondary")}</Link>
+          </Button>
         </div>
       </Section>
       <CtaBand />

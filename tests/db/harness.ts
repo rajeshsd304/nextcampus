@@ -15,6 +15,9 @@ export const SEED = {
     northReviewer: { id: "00000000-0000-4000-8000-000000000005", email: "reviewer@northbridge.test" },
     apexAdmin: { id: "00000000-0000-4000-8000-000000000006", email: "admin@apex.test" },
     newcomer: { id: "00000000-0000-4000-8000-000000000007", email: "newuser@nextcampus.test" },
+    learner: { id: "00000000-0000-4000-8000-000000000008", email: "learner@nextcampus.test" },
+    learner2: { id: "00000000-0000-4000-8000-000000000009", email: "learner2@nextcampus.test" },
+    dual: { id: "00000000-0000-4000-8000-00000000000a", email: "dual@nextcampus.test" },
   },
   orgs: {
     northbridge: "10000000-0000-4000-8000-000000000001",
@@ -25,14 +28,20 @@ export const SEED = {
 
 export type SeedUser = (typeof SEED.users)[keyof typeof SEED.users];
 
-/** Boots an in-memory Postgres with the Supabase shim, every migration and the seed. */
-export async function createTestDatabase(options: { seed?: boolean } = {}): Promise<PGlite> {
+/**
+ * Boots an in-memory Postgres with the Supabase shim, the migrations (optionally
+ * only those up to `migrationsUpTo`), the catalog reference data and the seed.
+ */
+export async function createTestDatabase(
+  options: { seed?: boolean; referenceData?: boolean; migrationsUpTo?: string } = {},
+): Promise<PGlite> {
   const db = new PGlite({ extensions: { pgcrypto } });
   await db.exec(readFileSync(path.join(root, "tests/db/supabase-shim.sql"), "utf8"));
 
   const migrationsDir = path.join(root, "supabase/migrations");
   const migrations = readdirSync(migrationsDir)
     .filter((file) => file.endsWith(".sql"))
+    .filter((file) => !options.migrationsUpTo || file <= options.migrationsUpTo)
     .sort();
   for (const file of migrations) {
     try {
@@ -42,6 +51,9 @@ export async function createTestDatabase(options: { seed?: boolean } = {}): Prom
     }
   }
 
+  if (options.referenceData !== false) {
+    await db.exec(readFileSync(path.join(root, "supabase/reference-data/catalog.sql"), "utf8"));
+  }
   if (options.seed !== false) {
     await db.exec(readFileSync(path.join(root, "supabase/seed.sql"), "utf8"));
   }
@@ -101,4 +113,20 @@ export async function createAuthUser(
     ],
   );
   return { id: input.id, email: input.email };
+}
+
+/** Executes a SQL file (path relative to the repository root). */
+export async function applySqlFile(db: PGlite, relativePath: string): Promise<void> {
+  try {
+    await db.exec(readFileSync(path.join(root, relativePath), "utf8"));
+  } catch (error) {
+    throw new Error(`${relativePath} failed: ${(error as Error).message}`);
+  }
+}
+
+/** Migration file names (sorted), optionally only those after `after`. */
+export function migrationFiles(after?: string): string[] {
+  return readdirSync(path.join(root, "supabase/migrations"))
+    .filter((file) => file.endsWith(".sql") && (!after || file > after))
+    .sort();
 }

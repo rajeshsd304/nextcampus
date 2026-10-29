@@ -9,7 +9,7 @@ export type Profile = Tables<"profiles">;
 
 export type MembershipOrganization = Pick<
   Tables<"organizations">,
-  "id" | "name" | "slug" | "type" | "status"
+  "id" | "name" | "slug" | "type" | "status" | "is_system"
 >;
 
 export type Membership = {
@@ -44,7 +44,9 @@ export const getViewer = cache(async (): Promise<Viewer | null> => {
     supabase.from("profiles").select("*").eq("id", user.id).maybeSingle(),
     supabase
       .from("organization_members")
-      .select("organization_id, role, status, joined_at, organizations(id, name, slug, type, status)")
+      .select(
+        "organization_id, role, status, joined_at, organizations(id, name, slug, type, status, is_system)",
+      )
       .eq("user_id", user.id)
       .order("joined_at", { ascending: true }),
     supabase.from("platform_admins").select("user_id").eq("user_id", user.id).maybeSingle(),

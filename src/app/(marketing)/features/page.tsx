@@ -1,115 +1,84 @@
 import {
-  Bell,
-  Building2,
-  History,
+  BookOpenCheck,
+  Clock3,
+  Globe2,
   KeyRound,
+  Languages,
   Layers,
-  Mail,
   MonitorSmartphone,
   Moon,
+  PenLine,
   ShieldCheck,
-  Users,
 } from "lucide-react";
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
+import { Badge } from "@/components/ui/badge";
 import { CtaBand } from "@/features/marketing/components/cta-band";
-import { FeatureCard, PageHero, Section, SectionHeading } from "@/features/marketing/components/section";
+import { PageHero, Section, SectionHeading } from "@/features/marketing/components/section";
 
-export const metadata: Metadata = {
-  title: "Features",
-  description:
-    "Multi-tenant organizations, role-based dashboards, secure invitations, audit logs and flexible sign-in.",
-  alternates: { canonical: "/features" },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("features");
+  return { title: t("metaTitle"), description: t("metaDescription"), alternates: { canonical: "/features" } };
+}
 
-const groups = [
+const GROUPS = [
   {
-    title: "Identity and access",
+    key: "available",
     items: [
-      {
-        icon: <KeyRound />,
-        title: "Google and email sign-in",
-        text: "Continue with Google, or use email and password with verification and recovery.",
-      },
-      {
-        icon: <Users />,
-        title: "Five distinct roles",
-        text: "Student, Instructor, Organization Admin, Invigilator/Reviewer and platform Super Admin.",
-      },
-      {
-        icon: <ShieldCheck />,
-        title: "Server-enforced authorization",
-        text: "Every page and mutation checks permissions on the server and again in the database.",
-      },
+      ["catalog", <Globe2 key="i" />],
+      ["bilingual", <Languages key="i" />],
+      ["accounts", <KeyRound key="i" />],
+      ["privacy", <ShieldCheck key="i" />],
+      ["devices", <MonitorSmartphone key="i" />],
+      ["themes", <Moon key="i" />],
     ],
   },
   {
-    title: "Organizations",
+    key: "upcoming",
     items: [
-      {
-        icon: <Building2 />,
-        title: "Self-serve onboarding",
-        text: "Create an organization with its own workspace address in under a minute.",
-      },
-      {
-        icon: <Mail />,
-        title: "Secure invitations",
-        text: "Email-bound, single-use links that expire after seven days and can be revoked anytime.",
-      },
-      {
-        icon: <Layers />,
-        title: "Tenant isolation",
-        text: "Row-level security keeps each institution's members, invitations and logs private.",
-      },
+      ["mcq", <BookOpenCheck key="i" />],
+      ["written", <PenLine key="i" />],
+      ["institutions", <Layers key="i" />],
     ],
   },
-  {
-    title: "Oversight",
-    items: [
-      {
-        icon: <History />,
-        title: "Audit log",
-        text: "An append-only history of tenancy changes and sign-in events with database timestamps.",
-      },
-      {
-        icon: <Bell />,
-        title: "Notification center",
-        text: "In-app alerts for invitations, role changes and security events.",
-      },
-      {
-        icon: <MonitorSmartphone />,
-        title: "Works everywhere",
-        text: "Responsive, keyboard-accessible layouts for phones, tablets and desktops.",
-      },
-      {
-        icon: <Moon />,
-        title: "Light and dark themes",
-        text: "Comfortable for long sessions, following your system preference by default.",
-      },
-    ],
-  },
-];
+] as const;
 
-export default function FeaturesPage() {
+export default async function FeaturesPage() {
+  const t = await getTranslations("features");
   return (
     <>
-      <PageHero
-        eyebrow="Features"
-        title="Everything an institution needs to run assessments with confidence"
-        description="NextCampus starts with the parts that matter most for trust: identity, access and accountability."
-      />
-      {groups.map((group, index) => (
+      <PageHero eyebrow={t("eyebrow")} title={t("title")} description={t("description")} />
+      {GROUPS.map((group, index) => (
         <Section
-          key={group.title}
+          key={group.key}
           className={index % 2 === 1 ? "border-border bg-surface border-y" : undefined}
         >
-          <SectionHeading title={group.title} align="left" />
-          <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {group.items.map((item) => (
-              <FeatureCard key={item.title} icon={item.icon} title={item.title}>
-                {item.text}
-              </FeatureCard>
+          <SectionHeading
+            title={t(`groups.${group.key}.title`)}
+            description={t(`groups.${group.key}.description`)}
+            align="left"
+          />
+          <ul className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {group.items.map(([key, icon]) => (
+              <li key={key} className="border-border bg-surface rounded-2xl border p-6 shadow-xs">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="bg-accent text-accent-foreground flex size-11 items-center justify-center rounded-xl [&_svg]:size-5">
+                    {icon}
+                  </div>
+                  {group.key === "upcoming" ? (
+                    <Badge tone="warning">
+                      <Clock3 className="size-3.5" aria-hidden="true" />
+                      {t("comingSoon")}
+                    </Badge>
+                  ) : (
+                    <Badge tone="success">{t("availableNow")}</Badge>
+                  )}
+                </div>
+                <h3 className="mt-4 font-semibold">{t(`items.${key}.title`)}</h3>
+                <p className="text-muted-foreground mt-2 text-sm">{t(`items.${key}.body`)}</p>
+              </li>
             ))}
-          </div>
+          </ul>
         </Section>
       ))}
       <CtaBand />

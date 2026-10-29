@@ -72,3 +72,19 @@ export async function listPlatformAudit(limit = 15): Promise<AuditEntry[]> {
   if (error) throw new Error(`Failed to load audit log: ${error.message}`);
   return withActorLabels(data);
 }
+
+const CATALOG_ACTION_PREFIXES = ["university.", "university_category.", "subject.", "exam_target."];
+
+/** Recent platform catalog changes (organization-less audit entries). Super-admin only via RLS. */
+export async function listCatalogAudit(limit = 20): Promise<AuditEntry[]> {
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase
+    .from("audit_logs")
+    .select("*")
+    .is("organization_id", null)
+    .or(CATALOG_ACTION_PREFIXES.map((prefix) => `action.like.${prefix}%`).join(","))
+    .order("created_at", { ascending: false })
+    .limit(limit);
+  if (error) throw new Error(`Failed to load catalog audit log: ${error.message}`);
+  return withActorLabels(data);
+}

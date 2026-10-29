@@ -19,9 +19,10 @@ export function Divider({ label }: { label: string }) {
   );
 }
 
-export const AUTH_ERROR_MESSAGES: Record<string, string> = {
-  oauth_failed: "Google sign-in didn't complete. Please try again.",
-  oauth_unavailable: "Google sign-in is temporarily unavailable. Try email and password instead.",
-  link_invalid: "That link is invalid. Request a new one below.",
-  link_expired: "That link has expired or was already used. Please sign in or request a new link.",
-};
+/** `?error=` codes the auth pages understand. Text: messages `authPages.urlErrors.<code>`. */
+export const AUTH_URL_ERRORS = ["oauth_failed", "oauth_unavailable", "link_invalid", "link_expired"] as const;
+export type AuthUrlError = (typeof AUTH_URL_ERRORS)[number];
+
+export function isAuthUrlError(value: unknown): value is AuthUrlError {
+  return typeof value === "string" && (AUTH_URL_ERRORS as readonly string[]).includes(value);
+}

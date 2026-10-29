@@ -1,37 +1,12 @@
+import en from "../../messages/en.json";
+
 /**
  * Stable error codes shared by database RPCs (raised as exception messages)
- * and server actions. Messages are safe to show to end users.
+ * and server actions. User-facing text lives in messages/<locale>.json under
+ * `errors.<code>`; Client Components translate the code. ERROR_MESSAGES is the
+ * English text, used where no translator is available (logs, tests).
  */
-export const ERROR_MESSAGES = {
-  not_authenticated: "Please sign in to continue.",
-  not_authorized: "You do not have permission to do that.",
-  profile_incomplete: "Complete your profile before continuing.",
-  invalid_input: "Some of the information provided is invalid.",
-  invalid_timezone: "Choose a valid time zone.",
-  invalid_slug: "Use 3–48 lowercase letters, numbers and single hyphens.",
-  slug_reserved: "That address is reserved. Please choose another.",
-  slug_taken: "That address is already in use. Please choose another.",
-  organization_limit_reached: "You have reached the limit of organizations you can create.",
-  organization_not_found: "Organization not found.",
-  organization_inactive: "This organization is currently suspended.",
-  invalid_email: "Enter a valid email address.",
-  already_member: "This person is already a member of the organization.",
-  invitation_not_found: "This invitation could not be found.",
-  invitation_not_pending: "This invitation has already been used, declined or revoked.",
-  invitation_expired: "This invitation has expired. Ask an administrator for a new one.",
-  invitation_email_mismatch: "This invitation was sent to a different email address.",
-  email_not_verified: "Verify your email address before accepting invitations.",
-  last_admin: "An organization must keep at least one administrator.",
-  member_not_found: "That member could not be found.",
-  rate_limited: "Too many requests. Please wait a moment and try again.",
-  invalid_credentials: "Incorrect email or password.",
-  email_not_confirmed: "Confirm your email address, then sign in.",
-  user_already_exists: "An account with this email already exists. Try signing in.",
-  weak_password: "Choose a stronger password.",
-  same_password: "Your new password must be different from the current one.",
-  reauthentication_needed: "For your security, sign in again before changing your password.",
-  unexpected: "Something went wrong. Please try again.",
-} as const;
+export const ERROR_MESSAGES = en.errors;
 
 export type ErrorCode = keyof typeof ERROR_MESSAGES;
 
@@ -47,6 +22,8 @@ export function errorCodeFromDatabase(
   if (isErrorCode(message)) return message;
   if (error?.code === "42501") return "not_authorized";
   if (error?.code === "23514" || error?.code === "22P02") return "invalid_input";
+  if (error?.code === "23505") return "already_exists";
+  if (error?.code === "23503") return "in_use";
   return "unexpected";
 }
 

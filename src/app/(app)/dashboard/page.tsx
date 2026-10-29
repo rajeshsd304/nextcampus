@@ -7,7 +7,8 @@ import { LAST_ORG_COOKIE } from "@/lib/supabase/proxy";
 
 /**
  * Post-sign-in router: sends the user to the dashboard their role allows in
- * their most recently used workspace.
+ * their most recently used workspace. Without a preference, an institution
+ * workspace wins over the public practice organization.
  */
 export default async function DashboardRouter() {
   const viewer = await requireViewer();
@@ -19,7 +20,10 @@ export default async function DashboardRouter() {
   }
 
   const lastSlug = (await cookies()).get(LAST_ORG_COOKIE)?.value;
-  const target = usable.find((m) => m.organization.slug === lastSlug) ?? usable[0];
+  const target =
+    usable.find((m) => m.organization.slug === lastSlug) ??
+    usable.find((m) => !m.organization.is_system) ??
+    usable[0];
   if (!target) redirect("/onboarding/organization");
   redirect(`/o/${target.organization.slug}/${ROLE_HOME_AREA[target.role]}`);
 }

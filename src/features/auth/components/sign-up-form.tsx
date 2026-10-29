@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { MailCheck } from "lucide-react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { Alert } from "@/components/ui/alert";
@@ -10,13 +11,18 @@ import { Button } from "@/components/ui/button";
 import { FormField } from "@/components/ui/form-field";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/misc";
+import { useMessageText } from "@/i18n/use-message-text";
 import { applyActionErrors } from "@/lib/forms";
 import { signUpAction } from "../actions";
 import { signUpSchema, type SignUpInput } from "../schemas";
 import { FormError } from "./form-error";
 import { PasswordInput } from "./password-input";
 
+const legalLink = "font-medium text-primary underline-offset-2 hover:underline dark:text-indigo-300";
+
 export function SignUpForm({ next }: { next?: string | undefined }) {
+  const t = useTranslations("authForms");
+  const text = useMessageText();
   const [pending, startTransition] = useTransition();
   const [sentTo, setSentTo] = useState<string | null>(null);
   const form = useForm<SignUpInput>({
@@ -40,16 +46,16 @@ export function SignUpForm({ next }: { next?: string | undefined }) {
         <div className="bg-accent text-accent-foreground flex size-12 items-center justify-center rounded-2xl">
           <MailCheck className="size-6" aria-hidden="true" />
         </div>
-        <h2 className="text-lg font-semibold">Check your inbox</h2>
+        <h2 className="text-lg font-semibold">{t("checkInboxTitle")}</h2>
         <p className="text-muted-foreground text-sm">
-          We sent a confirmation link to <strong className="text-foreground">{sentTo}</strong>. Open it on
-          this device to activate your account. The link expires in 24 hours.
+          {t.rich("checkInboxBody", {
+            email: sentTo,
+            strong: (chunks) => <strong className="text-foreground">{chunks}</strong>,
+          })}
         </p>
-        <Alert tone="info">
-          Didn&apos;t get it? Check your spam folder, or request a new link from the sign-in page.
-        </Alert>
+        <Alert tone="info">{t("checkInboxHint")}</Alert>
         <Button asChild variant="secondary" className="w-full">
-          <Link href={`/check-email?email=${encodeURIComponent(sentTo)}`}>Resend confirmation</Link>
+          <Link href={`/check-email?email=${encodeURIComponent(sentTo)}`}>{t("resendConfirmation")}</Link>
         </Button>
       </div>
     );
@@ -58,16 +64,16 @@ export function SignUpForm({ next }: { next?: string | undefined }) {
   return (
     <form onSubmit={onSubmit} noValidate className="space-y-4">
       <FormError message={errors.root?.server?.message} />
-      <FormField id="fullName" label="Full name" error={errors.fullName?.message}>
+      <FormField id="fullName" label={t("fullName")} error={errors.fullName?.message}>
         <Input autoComplete="name" {...form.register("fullName")} />
       </FormField>
-      <FormField id="email" label="Work or school email" error={errors.email?.message}>
+      <FormField id="email" label={t("email")} error={errors.email?.message}>
         <Input type="email" autoComplete="email" inputMode="email" {...form.register("email")} />
       </FormField>
       <FormField
         id="password"
-        label="Password"
-        description="At least 10 characters, including a letter and a number."
+        label={t("password")}
+        description={t("passwordHint")}
         error={errors.password?.message}
       >
         <PasswordInput autoComplete="new-password" {...form.register("password")} />
@@ -77,38 +83,35 @@ export function SignUpForm({ next }: { next?: string | undefined }) {
           <input
             id="acceptTerms"
             type="checkbox"
-            className="border-input mt-0.5 size-4 rounded accent-indigo-600"
+            className="border-input mt-1 size-5 shrink-0 rounded accent-indigo-600"
             aria-invalid={errors.acceptTerms ? true : undefined}
             aria-describedby={errors.acceptTerms ? "acceptTerms-error" : undefined}
             {...form.register("acceptTerms")}
           />
           <label htmlFor="acceptTerms" className="text-muted-foreground text-sm">
-            I agree to the{" "}
-            <Link
-              href="/legal/terms"
-              className="text-primary font-medium underline-offset-2 hover:underline dark:text-indigo-300"
-            >
-              Terms of Service
-            </Link>{" "}
-            and{" "}
-            <Link
-              href="/legal/privacy"
-              className="text-primary font-medium underline-offset-2 hover:underline dark:text-indigo-300"
-            >
-              Privacy Policy
-            </Link>
-            .
+            {t.rich("acceptTerms", {
+              terms: (chunks) => (
+                <Link href="/legal/terms" className={legalLink}>
+                  {chunks}
+                </Link>
+              ),
+              privacy: (chunks) => (
+                <Link href="/legal/privacy" className={legalLink}>
+                  {chunks}
+                </Link>
+              ),
+            })}
           </label>
         </div>
         {errors.acceptTerms ? (
           <p id="acceptTerms-error" className="text-danger text-sm font-medium">
-            {errors.acceptTerms.message}
+            {text(errors.acceptTerms.message)}
           </p>
         ) : null}
       </div>
       <Button type="submit" size="lg" className="w-full" disabled={pending}>
-        {pending ? <Spinner label="Creating account" /> : null}
-        Create account
+        {pending ? <Spinner label={t("creatingAccount")} /> : null}
+        {t("createAccount")}
       </Button>
     </form>
   );

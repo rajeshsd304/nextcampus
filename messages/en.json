@@ -1,0 +1,1398 @@
+{
+  "meta": {
+    "siteName": "NextCampus",
+    "defaultTitle": "NextCampus — University admission test preparation in Bangladesh",
+    "titleTemplate": "{page} · NextCampus",
+    "description": "Prepare for university, engineering and medical admission tests in Bangladesh with MCQ and written practice, in Bangla and English."
+  },
+  "og": {
+    "mark": "N",
+    "title": "University admission test preparation for Bangladesh.",
+    "subtitle": "MCQ and written practice in Bangla and English."
+  },
+  "common": {
+    "skipToContent": "Skip to main content",
+    "optional": "(optional)",
+    "working": "Working",
+    "cancel": "Cancel",
+    "closeMenu": "Close menu",
+    "loading": "Loading",
+    "correctHighlighted": "Please correct the highlighted fields."
+  },
+  "theme": {
+    "toggle": "Color theme: {current}. Switch to {next}.",
+    "current": "Theme: {current}",
+    "light": "light",
+    "dark": "dark",
+    "system": "system"
+  },
+  "locale": {
+    "label": "Language",
+    "switchTo": "Switch language to {language}",
+    "switching": "Changing language"
+  },
+  "nav": {
+    "mainLabel": "Main",
+    "mobileLabel": "Mobile",
+    "menu": "Menu",
+    "openMenu": "Open menu",
+    "signIn": "Sign in",
+    "getStarted": "Start free",
+    "exams": "Exam catalog",
+    "features": "Features",
+    "pricing": "Pricing",
+    "faq": "FAQ",
+    "contact": "Contact",
+    "solutions": "For coaching centers",
+    "privacy": "Privacy policy",
+    "terms": "Terms of service",
+    "acceptableUse": "Acceptable use",
+    "footer": {
+      "tagline": "Admission test preparation you can trust — in Bangla and English.",
+      "copyright": "© {year} {brand}. All rights reserved.",
+      "product": "Product",
+      "support": "Support",
+      "legal": "Legal"
+    }
+  },
+  "roles": {
+    "student": {
+      "label": "Student",
+      "description": "Practises for admission tests and tracks their progress."
+    },
+    "grader": {
+      "label": "Instructor/Grader",
+      "description": "Prepares practice material, reviews written answers and invigilates."
+    },
+    "orgAdmin": {
+      "label": "Organization Admin",
+      "description": "Manages the organization, its members and invitations."
+    },
+    "platformAdmin": {
+      "label": "Platform Admin",
+      "description": "Runs NextCampus: catalog, organizations and platform settings."
+    }
+  },
+  "errors": {
+    "not_authenticated": "Please sign in to continue.",
+    "not_authorized": "You do not have permission to do that.",
+    "profile_incomplete": "Complete your profile before continuing.",
+    "invalid_input": "Some of the information provided is invalid.",
+    "invalid_timezone": "Choose a valid time zone.",
+    "invalid_slug": "Use 3–48 lowercase letters, numbers and single hyphens.",
+    "slug_reserved": "That address is reserved. Please choose another.",
+    "slug_taken": "That address is already in use. Please choose another.",
+    "organization_limit_reached": "You have reached the limit of organizations you can create.",
+    "organization_not_found": "Organization not found.",
+    "organization_inactive": "This organization is currently suspended.",
+    "invalid_email": "Enter a valid email address.",
+    "already_member": "This person is already a member of the organization.",
+    "invitation_not_found": "This invitation could not be found.",
+    "invitation_not_pending": "This invitation has already been used, declined or revoked.",
+    "invitation_expired": "This invitation has expired. Ask an administrator for a new one.",
+    "invitation_email_mismatch": "This invitation was sent to a different email address.",
+    "email_not_verified": "Verify your email address before accepting invitations.",
+    "last_admin": "An organization must keep at least one administrator.",
+    "member_not_found": "That member could not be found.",
+    "rate_limited": "Too many requests. Please wait a moment and try again.",
+    "invalid_credentials": "Incorrect email or password.",
+    "email_not_confirmed": "Confirm your email address, then sign in.",
+    "user_already_exists": "An account with this email already exists. Try signing in.",
+    "weak_password": "Choose a stronger password.",
+    "same_password": "Your new password must be different from the current one.",
+    "reauthentication_needed": "For your security, sign in again before changing your password.",
+    "system_organization_protected": "The NextCampus Public organization cannot be changed or left.",
+    "already_exists": "An item with this address already exists.",
+    "in_use": "This item is still in use. Deactivate it instead, or remove what references it first.",
+    "catalog_item_not_found": "That catalog item could not be found.",
+    "unexpected": "Something went wrong. Please try again."
+  },
+  "validation": {
+    "emailRequired": "Enter your email address.",
+    "emailTooLong": "Email address is too long.",
+    "emailInvalid": "Enter a valid email address.",
+    "passwordRequired": "Enter your password.",
+    "passwordMin": "Use at least 10 characters.",
+    "passwordMax": "Use at most 72 characters.",
+    "passwordComplexity": "Include at least one letter and one number.",
+    "confirmPasswordRequired": "Confirm your new password.",
+    "passwordMismatch": "Passwords do not match.",
+    "nameRequired": "Enter your name.",
+    "nameTooLong": "Name is too long.",
+    "fullNameRequired": "Enter your full name.",
+    "displayNameTooLong": "Display name is too long.",
+    "acceptTerms": "You must accept the terms to continue.",
+    "timezoneRequired": "Choose your time zone.",
+    "timezoneInvalid": "Choose a valid time zone.",
+    "slugMin": "Use at least 3 characters.",
+    "slugMax": "Use at most 48 characters.",
+    "slugPattern": "Use lowercase letters, numbers and hyphens; start and end with a letter or number.",
+    "slugDoubleHyphen": "Avoid consecutive hyphens.",
+    "slugReserved": "That address is reserved.",
+    "orgNameMin": "Use at least 2 characters.",
+    "orgNameMax": "Use at most 120 characters.",
+    "orgTypeRequired": "Choose an organization type.",
+    "urlInvalid": "Enter a full URL starting with https://",
+    "roleRequired": "Choose a role.",
+    "invitationLinkInvalid": "Invalid invitation link.",
+    "textTooLong": "This text is too long.",
+    "messageMin": "Tell us a little more (at least 10 characters).",
+    "catalogSlug": "Use 2–60 lowercase letters, numbers and single hyphens.",
+    "categoryKey": "Use 2–40 lowercase letters, numbers and underscores, starting with a letter.",
+    "catalogNameMin": "Use at least 2 characters.",
+    "shortCode": "Use 1–16 characters.",
+    "universityRequired": "Choose a university.",
+    "negativeMarking": "Enter a number between 0 and 1."
+  },
+  "authForms": {
+    "email": "Email",
+    "password": "Password",
+    "fullName": "Full name",
+    "forgotPassword": "Forgot password?",
+    "signIn": "Sign in",
+    "signingIn": "Signing in",
+    "continueWithGoogle": "Continue with Google",
+    "redirectingToGoogle": "Redirecting to Google",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "passwordHint": "At least 10 characters, including a letter and a number.",
+    "acceptTerms": "I agree to the <terms>Terms of Service</terms> and <privacy>Privacy Policy</privacy>.",
+    "createAccount": "Create account",
+    "creatingAccount": "Creating account",
+    "checkInboxTitle": "Check your inbox",
+    "checkInboxBody": "We sent a confirmation link to <strong>{email}</strong>. Open it on this device to activate your account. The link expires in 24 hours.",
+    "checkInboxHint": "Didn’t get it? Check your spam folder, or request a new link.",
+    "resendConfirmation": "Resend confirmation",
+    "sending": "Sending",
+    "newPassword": "New password",
+    "confirmNewPassword": "Confirm new password",
+    "saving": "Saving",
+    "passwordUpdated": "Your password has been updated.",
+    "confirmationResent": "If an unconfirmed account exists, we sent a new confirmation link."
+  },
+  "authPages": {
+    "orWithEmail": "or with email",
+    "urlErrors": {
+      "oauth_failed": "Google sign-in didn’t complete. Please try again.",
+      "oauth_unavailable": "Google sign-in is temporarily unavailable. Try email and password instead.",
+      "link_invalid": "That link is invalid. Request a new one below.",
+      "link_expired": "That link has expired or was already used. Please sign in or request a new link."
+    },
+    "aside": {
+      "title": "Your admission journey, organized.",
+      "point1": "Every major university admission test in one catalog",
+      "point2": "Practise in Bangla or English — switch anytime",
+      "point3": "Your data stays private: other students never see it",
+      "copyright": "© {year} {brand}"
+    },
+    "signIn": {
+      "metaTitle": "Sign in",
+      "title": "Welcome back",
+      "description": "Sign in to continue your preparation.",
+      "newHere": "New to NextCampus?",
+      "createAccount": "Create a free account"
+    },
+    "signUp": {
+      "metaTitle": "Create your account",
+      "title": "Create your free account",
+      "description": "Start preparing for your admission tests today.",
+      "haveAccount": "Already have an account?",
+      "signIn": "Sign in"
+    },
+    "forgot": {
+      "title": "Reset your password",
+      "description": "Enter the email you use for NextCampus and we’ll send you a secure reset link.",
+      "submit": "Send reset link",
+      "success": "If an account exists for that email, a reset link is on its way. It expires in one hour.",
+      "remembered": "Remembered it?",
+      "backToSignIn": "Back to sign in"
+    },
+    "checkEmail": {
+      "title": "Confirm your email",
+      "description": "Didn’t receive the confirmation link? Request a new one. Links expire after 24 hours.",
+      "submit": "Resend confirmation link",
+      "success": "If an unconfirmed account exists for that email, a new confirmation link is on its way."
+    },
+    "reset": {
+      "title": "Choose a new password",
+      "signedInAs": "Signed in as {email}.",
+      "submit": "Save password and continue"
+    }
+  },
+  "shell": {
+    "orgSwitcher": {
+      "current": "Current workspace:",
+      "select": "Select workspace",
+      "heading": "Your workspaces",
+      "none": "You are not a member of any workspace yet.",
+      "suspended": "Suspended",
+      "invitations": "Pending invitations",
+      "addWorkspace": "Join or create a workspace"
+    },
+    "userMenu": {
+      "label": "Account menu for {name}",
+      "settings": "Account settings",
+      "organizations": "Workspaces",
+      "notifications": "Notifications",
+      "platform": "Platform console",
+      "signOut": "Sign out",
+      "signingOut": "Signing out…"
+    },
+    "orgNav": {
+      "label": "{name} navigation",
+      "overview": "Overview",
+      "members": "Members",
+      "invitations": "Invitations",
+      "audit": "Audit log",
+      "settings": "Settings",
+      "instructorHome": "Instructor home",
+      "reviewDesk": "Grading desk",
+      "studentHome": "My preparation",
+      "unavailableTitle": "{name} is unavailable",
+      "orgSuspended": "This organization has been suspended by NextCampus. Contact your administrator for details.",
+      "membershipSuspended": "Your membership in this organization is suspended. Contact an organization administrator."
+    }
+  },
+  "orgs": {
+    "publicName": "NextCampus Public",
+    "publicDescription": "Public practice for every student"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "description": "Invitations, membership changes and security alerts for your account.",
+    "bell": "Notifications",
+    "bellUnread": "Notifications, {count} unread",
+    "overNine": "{count}+",
+    "markAllRead": "Mark all as read",
+    "markingAll": "Marking all as read",
+    "markRead": "Mark read",
+    "caughtUp": "You’re all caught up.",
+    "unread": "Unread",
+    "viewAll": "View all notifications",
+    "filterLabel": "Filter notifications",
+    "filters": {
+      "all": "All",
+      "unread": "Unread"
+    },
+    "emptyAll": "No notifications yet",
+    "emptyUnread": "No unread notifications",
+    "emptyDescription": "We’ll let you know about invitations, role changes and security events.",
+    "open": "Open",
+    "pagination": "Notification pages",
+    "page": "Page {page} of {total}",
+    "previous": "Previous",
+    "next": "Next",
+    "templates": {
+      "invitation_received": {
+        "title": "You have been invited to join {organization}",
+        "body": "Review the invitation to join as {role}."
+      },
+      "membership_welcome": {
+        "title": "Welcome to {organization}",
+        "body": "You joined as {role}."
+      },
+      "invitation_accepted": {
+        "title": "{name} accepted your invitation",
+        "body": "They joined {organization} as {role}."
+      },
+      "role_changed": {
+        "title": "Your role in {organization} changed",
+        "body": "You are now {role}."
+      },
+      "member_removed": {
+        "title": "You were removed from {organization}",
+        "body": "Contact an administrator of the organization if you think this is a mistake."
+      },
+      "password_changed": {
+        "title": "Your password was changed",
+        "body": "If you did not make this change, reset your password immediately."
+      },
+      "workspace_ready": {
+        "title": "Welcome to NextCampus",
+        "body": "Your student workspace is ready. Practice published by your instructors will appear here."
+      },
+      "public_welcome": {
+        "title": "Welcome to NextCampus",
+        "body": "Your practice space is ready. Explore the admission catalog while practice exams are being prepared."
+      }
+    }
+  },
+  "orgForms": {
+    "detailsSaved": "Organization details saved.",
+    "roleUpdated": "Role updated.",
+    "memberRemoved": "Member removed.",
+    "left": "You left the organization.",
+    "suspended": "Organization suspended.",
+    "reactivated": "Organization reactivated.",
+    "name": "Organization name",
+    "slug": "Workspace address",
+    "slugHint": "Your workspace URL: <url></url>",
+    "type": "Organization type",
+    "create": "Create workspace",
+    "creating": "Creating workspace",
+    "website": "Website",
+    "contactEmail": "Contact email",
+    "save": "Save changes",
+    "saving": "Saving",
+    "types": {
+      "university": "University",
+      "coaching_center": "Coaching center",
+      "training_organization": "Training organization",
+      "independent_instructor": "Independent instructor",
+      "other": "Other"
+    },
+    "members": {
+      "roleFor": "Role for {name}",
+      "save": "Save",
+      "saving": "Saving",
+      "leave": "Leave",
+      "remove": "Remove",
+      "leaveTitle": "Leave this organization?",
+      "leaveDescription": "You will lose access to this organization immediately.",
+      "leaveConfirm": "Leave organization",
+      "removeTitle": "Remove {name}?",
+      "removeDescription": "They will lose access to this organization immediately. You can invite them again later.",
+      "removeConfirm": "Remove member",
+      "leaveNamedTitle": "Leave {name}?",
+      "leaveNamedDescription": "You will lose access to this organization immediately. An administrator can invite you again."
+    },
+    "status": {
+      "suspend": "Suspend",
+      "suspendTitle": "Suspend {name}?",
+      "suspendDescription": "Members keep their accounts but lose all organization permissions until it is reactivated.",
+      "suspendConfirm": "Suspend organization",
+      "reactivate": "Reactivate"
+    },
+    "joinPublic": {
+      "button": "Start practising on NextCampus",
+      "joining": "Joining"
+    }
+  },
+  "invitationForms": {
+    "sent": "Invitation sent to {email}.",
+    "emailFailed": "Invitation created, but the email could not be sent. Share the link below.",
+    "revoked": "Invitation revoked.",
+    "declined": "Invitation declined.",
+    "linkOnce": "This link is shown only once and works only for {email}.",
+    "linkLabel": "Invitation link",
+    "copy": "Copy link",
+    "copied": "Copied",
+    "email": "Email address",
+    "emailPlaceholder": "name@example.com",
+    "role": "Role",
+    "submit": "Send invitation",
+    "sending": "Sending invitation",
+    "revoke": {
+      "button": "Revoke",
+      "title": "Revoke invitation?",
+      "description": "The invitation link sent to {email} will stop working immediately.",
+      "confirm": "Revoke invitation"
+    },
+    "response": {
+      "accept": "Accept invitation",
+      "decline": "Decline",
+      "declined": "Invitation declined.",
+      "working": "Working"
+    }
+  },
+  "profileForm": {
+    "saved": "Profile saved.",
+    "fullName": "Full name",
+    "displayName": "Display name",
+    "displayNameHint": "Shown to your instructors and organization admins.",
+    "timezone": "Time zone",
+    "timezoneHint": "Exam schedules and deadlines are shown in this time zone.",
+    "marketingOptIn": "Send me occasional product updates from NextCampus.",
+    "save": "Save changes",
+    "saving": "Saving",
+    "continue": "Continue",
+    "preferences": {
+      "language": "Language",
+      "digits": "Numbers",
+      "digitOptions": {
+        "beng": "Bangla digits (১২৩)",
+        "latn": "English digits (123)"
+      },
+      "save": "Save preferences",
+      "saving": "Saving",
+      "saved": "Preferences saved."
+    }
+  },
+  "contactForm": {
+    "sent": "Thanks — your message has been received. We usually reply within one business day.",
+    "sentTitle": "Message sent",
+    "name": "Name",
+    "email": "Email",
+    "organization": "School, college or coaching center",
+    "topic": "Topic",
+    "topics": {
+      "sales": "Plans and pricing",
+      "support": "Help with my account",
+      "partnership": "Coaching center partnership",
+      "security": "Security or privacy",
+      "other": "Something else"
+    },
+    "message": "How can we help?",
+    "honeypot": "Website",
+    "submit": "Send message",
+    "sending": "Sending"
+  },
+  "errorPage": {
+    "title": "Something went wrong",
+    "body": "We couldn’t load this page. Please try again.",
+    "reference": "Reference: {digest}",
+    "retry": "Try again"
+  },
+  "globalError": {
+    "title": "NextCampus is temporarily unavailable",
+    "body": "An unexpected error occurred.",
+    "reference": "Reference:",
+    "retry": "Try again"
+  },
+  "states": {
+    "notFound": {
+      "code": "404",
+      "title": "Page not found",
+      "body": "The page you are looking for does not exist, or you do not have access to it.",
+      "home": "Go home",
+      "dashboard": "Open dashboard"
+    },
+    "forbidden": {
+      "title": "You don’t have access to this area",
+      "body": "Your role in this organization does not include this page. If you believe this is a mistake, ask an organization administrator to review your role.",
+      "cta": "Go to my dashboard"
+    }
+  },
+  "email": {
+    "invitation": {
+      "subject": "You’re invited to join {organization} on NextCampus",
+      "body": "{inviter} invited you to join {organization} as {role}.",
+      "button": "Review invitation",
+      "footer": "This invitation is for {email} and expires {expires}.",
+      "tagline": "Admission preparation you can trust.",
+      "fallbackOrganization": "a NextCampus organization"
+    }
+  },
+  "catalogAdmin": {
+    "eyebrow": "Platform Admin",
+    "title": "Admission catalog",
+    "description": "Universities, exam targets, subjects and categories shown on the public catalog. Changes appear immediately and are recorded in the audit log.",
+    "formDescription": "Enter both Bangla and English names. Slugs appear in public URLs and must be unique.",
+    "saved": "Saved.",
+    "activated": "Activated.",
+    "deactivated": "Deactivated.",
+    "deleted": "Deleted.",
+    "inactive": "Inactive",
+    "emptySection": "Nothing here yet.",
+    "targetCount": "{count} exam targets",
+    "activityTitle": "Recent catalog changes",
+    "breadcrumb": "Breadcrumb",
+    "back": "← Back to catalog",
+    "sections": {
+      "universities": {
+        "title": "Universities",
+        "description": "Deactivate to hide a university from the public catalog without deleting it.",
+        "add": "Add university",
+        "edit": "Edit university"
+      },
+      "targets": {
+        "title": "Exam targets",
+        "description": "Units and admission tests students can prepare for.",
+        "add": "Add exam target",
+        "edit": "Edit exam target"
+      },
+      "subjects": {
+        "title": "Subjects",
+        "description": "Used to filter the catalog and describe exam targets.",
+        "add": "Add subject",
+        "edit": "Edit subject"
+      },
+      "categories": {
+        "title": "University categories",
+        "description": "Groups such as general, engineering or medical. New categories need no code change.",
+        "add": "Add category",
+        "edit": "Edit category"
+      }
+    },
+    "row": {
+      "moveUp": "Move {name} up",
+      "moveDown": "Move {name} down",
+      "edit": "Edit",
+      "editNamed": "Edit {name}",
+      "activate": "Activate",
+      "activateNamed": "Activate {name}",
+      "deactivate": "Deactivate",
+      "deactivateNamed": "Deactivate {name}",
+      "deactivateTitle": "Deactivate {name}?",
+      "deactivateDescription": "It will disappear from the public catalog. No data is deleted and you can activate it again.",
+      "delete": "Delete",
+      "deleteNamed": "Delete {name}",
+      "deleteTitle": "Delete {name}?",
+      "deleteDescription": "This cannot be undone. Items still referenced elsewhere cannot be deleted — deactivate them instead."
+    },
+    "form": {
+      "save": "Save",
+      "saving": "Saving",
+      "cancel": "Cancel",
+      "active": "Active",
+      "activeHint": "Visible on the public catalog.",
+      "key": "Key",
+      "keyHint": "Stable identifier, e.g. engineering. Lowercase letters, numbers and underscores.",
+      "nameBn": "Name (Bangla)",
+      "nameEn": "Name (English)",
+      "slug": "Slug",
+      "slugHint": "Used in the public URL, e.g. /exams/du.",
+      "shortCode": "Short code",
+      "category": "Category",
+      "website": "Official website",
+      "university": "University",
+      "descriptionBn": "Description (Bangla)",
+      "descriptionEn": "Description (English)",
+      "formatBn": "Typical format (Bangla)",
+      "formatEn": "Typical format (English)",
+      "negativeMarking": "Default negative marking",
+      "negativeMarkingHint": "Marks deducted per wrong MCQ answer (0 to 1), e.g. 0.25.",
+      "subjects": "Subjects"
+    }
+  },
+  "audit": {
+    "emptyTitle": "No activity yet",
+    "emptyDescription": "Administrative changes will appear here.",
+    "by": "by {actor}",
+    "formerMember": "Former member",
+    "system": "System",
+    "roleChange": "{from} → {to}",
+    "changedFields": "Changed {fields}",
+    "fields": {
+      "name": "name",
+      "type": "type",
+      "website": "website",
+      "contact_email": "contact email",
+      "status": "status"
+    },
+    "actions": {
+      "auth": {
+        "sign_up": "Account created",
+        "sign_in": "Signed in",
+        "sign_out": "Signed out",
+        "password_changed": "Password changed",
+        "email_verified": "Email verified"
+      },
+      "profile": {
+        "onboarded": "Profile completed"
+      },
+      "organization": {
+        "created": "Organization created",
+        "updated": "Organization updated"
+      },
+      "invitation": {
+        "created": "Invitation sent",
+        "revoked": "Invitation revoked",
+        "accepted": "Invitation accepted",
+        "declined": "Invitation declined"
+      },
+      "member": {
+        "role_changed": "Member role changed",
+        "removed": "Member removed",
+        "left": "Member left",
+        "auto_enrolled": "Joined public practice",
+        "joined_public": "Joined public practice"
+      },
+      "university": {
+        "created": "University created",
+        "updated": "University updated",
+        "activated": "University activated",
+        "deactivated": "University deactivated",
+        "deleted": "University deleted",
+        "reordered": "University reordered"
+      },
+      "university_category": {
+        "created": "Category created",
+        "updated": "Category updated",
+        "activated": "Category activated",
+        "deactivated": "Category deactivated",
+        "deleted": "Category deleted",
+        "reordered": "Category reordered"
+      },
+      "subject": {
+        "created": "Subject created",
+        "updated": "Subject updated",
+        "activated": "Subject activated",
+        "deactivated": "Subject deactivated",
+        "deleted": "Subject deleted",
+        "reordered": "Subject reordered"
+      },
+      "exam_target": {
+        "created": "Exam target created",
+        "updated": "Exam target updated",
+        "activated": "Exam target activated",
+        "deactivated": "Exam target deactivated",
+        "deleted": "Exam target deleted",
+        "reordered": "Exam target reordered",
+        "subjects_changed": "Exam target subjects changed"
+      }
+    }
+  },
+  "catalog": {
+    "metaTitle": "Admission exam catalog",
+    "metaDescription": "Browse university, engineering, medical and cluster admission tests in Bangladesh by university, category and subject.",
+    "eyebrow": "Exam catalog",
+    "title": "Find your admission test",
+    "description": "Universities and units students prepare for, with subjects and what to expect. Filter by university, category or subject.",
+    "comingSoonTitle": "Practice exams coming soon",
+    "comingSoonBody": "This catalog lists the admission tests NextCampus is preparing practice for. Practice exams are not available yet — create a free account to be ready when they launch.",
+    "unavailableTitle": "The catalog is temporarily unavailable",
+    "unavailableBody": "We couldn’t load the admission catalog. Please try again in a moment.",
+    "retry": "Try again",
+    "resultCount": "Showing {targets} exam targets from {universities} universities",
+    "noResultsTitle": "No matching exam targets",
+    "noResultsBody": "Try a different university, category or subject.",
+    "viewUniversity": "University details",
+    "universityMetaTitle": "{name} admission test",
+    "universityMetaDescription": "Admission units, subjects and format notes for {name}.",
+    "breadcrumb": "Breadcrumb",
+    "backToCatalog": "← All admission tests",
+    "officialWebsite": "Official website",
+    "opensInNewTab": "(opens in a new tab)",
+    "targetsHeading": "Admission units",
+    "noTargets": "No admission units have been added for this university yet.",
+    "signUpCta": "Create a free account",
+    "filters": {
+      "legend": "Filter admission tests",
+      "university": "University",
+      "allUniversities": "All universities",
+      "category": "Category",
+      "allCategories": "All categories",
+      "subject": "Subject",
+      "allSubjects": "All subjects",
+      "apply": "Apply filters",
+      "clear": "Clear filters"
+    },
+    "target": {
+      "comingSoon": "Practice coming soon",
+      "subjects": "Subjects",
+      "format": "Typical format",
+      "negativeMarking": "Negative marking",
+      "negativePerWrong": "−{marks} per wrong answer (practice default)",
+      "noNegative": "None (practice default)",
+      "verify": "Rules change every year — always check the official admission circular."
+    }
+  },
+  "home": {
+    "comingSoon": "Coming soon",
+    "hero": {
+      "eyebrow": "Admission test preparation for Bangladesh",
+      "title": "Prepare for your <highlight>dream university</highlight> with confidence.",
+      "body": "NextCampus brings university, engineering, medical and cluster admission tests into one place — with MCQ and written practice in Bangla and English.",
+      "primary": "Create a free account",
+      "secondary": "Browse admission tests",
+      "note": "Practice exams are launching soon. Your free account will be ready when they do."
+    },
+    "sample": {
+      "subject": "Physics · MCQ",
+      "badge": "Example",
+      "question": "A body starts from rest with uniform acceleration 2 m/s². What is its velocity after 5 s?",
+      "options": {
+        "a": "5 m/s",
+        "b": "10 m/s",
+        "c": "20 m/s",
+        "d": "25 m/s"
+      },
+      "correct": "Correct answer",
+      "explanation": "v = u + at = 0 + 2 × 5 = 10 m/s. Every practice question will come with a short explanation like this.",
+      "caption": "An example question to show the format — not taken from a real admission test."
+    },
+    "universities": {
+      "heading": "Admission tests in our catalog",
+      "disclaimer": "Names are listed for reference only. NextCampus is not affiliated with or endorsed by these institutions."
+    },
+    "how": {
+      "eyebrow": "How it works",
+      "title": "Three steps to a focused preparation",
+      "description": "Built around the admission tests you are actually sitting.",
+      "steps": {
+        "choose": {
+          "title": "Choose your targets",
+          "body": "Pick the universities and units you are applying for from the catalog."
+        },
+        "practice": {
+          "title": "Practise MCQ and written",
+          "body": "Answer questions organized by subject and exam, in Bangla or English."
+        },
+        "improve": {
+          "title": "Review and improve",
+          "body": "See what you got wrong, read the explanation and focus on weak topics."
+        }
+      }
+    },
+    "formats": {
+      "eyebrow": "Question types",
+      "title": "MCQ and written practice, together",
+      "description": "Most admission tests mix both. Your preparation should too.",
+      "mcq": {
+        "title": "MCQ with negative marking",
+        "body": "Timed multiple-choice practice that follows each test’s negative-marking rule, so you learn when to answer and when to skip."
+      },
+      "written": {
+        "title": "Written answers, reviewed",
+        "body": "Practise written and problem-solving questions and get feedback from instructors and graders."
+      }
+    },
+    "roadmap": {
+      "eyebrow": "What’s coming",
+      "title": "Practice that shows you where you stand",
+      "description": "These features are in development. We will not show scores, ranks or statistics until they are real.",
+      "modelTests": {
+        "title": "Full-length model tests",
+        "body": "Sit complete mock tests under real time limits, built around each admission unit’s format."
+      },
+      "analytics": {
+        "title": "Performance analysis",
+        "body": "Subject- and topic-level accuracy, time per question and progress over time."
+      },
+      "leaderboard": {
+        "title": "Leaderboards",
+        "body": "Compare your model-test results with other students, with control over how your name appears."
+      }
+    },
+    "pricing": {
+      "eyebrow": "Pricing",
+      "title": "Start free",
+      "description": "A free plan for everyone, and a Premium plan when full practice launches. Prices in Bangladeshi Taka.",
+      "link": "Compare plans"
+    },
+    "faq": {
+      "eyebrow": "FAQ",
+      "title": "Questions students ask",
+      "more": "See all questions",
+      "items": {
+        "what": {
+          "q": "What can I do on NextCampus today?",
+          "a": "You can create a free account, browse the admission catalog and set your language. Practice exams are being prepared and will appear in your dashboard when they launch."
+        },
+        "cost": {
+          "q": "Is it free?",
+          "a": "Yes, the free plan costs ৳0. A Premium plan is planned; its price will be announced before launch and nothing is charged until you choose to upgrade."
+        },
+        "language": {
+          "q": "Can I use it in Bangla?",
+          "a": "Yes. NextCampus works fully in Bangla and English. Switch the language from the top of any page."
+        },
+        "institutions": {
+          "q": "Is NextCampus affiliated with the universities listed?",
+          "a": "No. NextCampus is an independent preparation platform. Always follow the official admission circular of each university."
+        }
+      }
+    },
+    "institutions": {
+      "title": "Run a coaching center?",
+      "body": "Get a private workspace for your batches, invite instructors and graders, and keep your students’ data separate from everyone else’s.",
+      "cta": "NextCampus for coaching centers"
+    }
+  },
+  "marketing": {
+    "cta": {
+      "title": "Start your admission preparation today",
+      "body": "Create a free account, choose your target universities and be ready when practice launches.",
+      "primary": "Create a free account",
+      "secondary": "Browse admission tests"
+    }
+  },
+  "plans": {
+    "priceTba": "Price to be announced",
+    "perMonth": "/ month",
+    "free": {
+      "name": "Free",
+      "tagline": "Everything you need to get started.",
+      "cta": "Create a free account"
+    },
+    "premium": {
+      "name": "Premium",
+      "tagline": "Full practice, model tests and analysis — launching soon.",
+      "cta": "Coming soon"
+    },
+    "features": {
+      "account": "Free NextCampus account",
+      "catalog": "Full admission catalog with subjects and format notes",
+      "bilingual": "Use NextCampus in Bangla or English",
+      "practiceSamples": "Sample practice questions when practice launches",
+      "fullPractice": "Unlimited MCQ and written practice",
+      "modelTests": "Full-length model tests",
+      "writtenFeedback": "Feedback on written answers",
+      "analytics": "Performance analysis",
+      "leaderboard": "Leaderboards"
+    }
+  },
+  "features": {
+    "metaTitle": "Features",
+    "metaDescription": "What NextCampus offers today and what is coming for admission test preparation.",
+    "eyebrow": "Features",
+    "title": "Built for admission test preparation",
+    "description": "We clearly separate what works today from what is still being built.",
+    "availableNow": "Available now",
+    "comingSoon": "Coming soon",
+    "groups": {
+      "available": {
+        "title": "Available today",
+        "description": "Live on NextCampus right now."
+      },
+      "upcoming": {
+        "title": "In development",
+        "description": "Being built now. We’ll announce each one when it is ready."
+      }
+    },
+    "items": {
+      "catalog": {
+        "title": "Admission catalog",
+        "body": "Universities, units, subjects and format notes, filterable by university, category and subject."
+      },
+      "bilingual": {
+        "title": "Bangla and English",
+        "body": "Every page in both languages, with Bangla digits and dates in Bangladesh time."
+      },
+      "accounts": {
+        "title": "Simple, secure sign-in",
+        "body": "Continue with Google, or use email and password with verification and secure recovery."
+      },
+      "privacy": {
+        "title": "Private by default",
+        "body": "Other students cannot see your profile, email or activity. Access rules are enforced by the database itself."
+      },
+      "devices": {
+        "title": "Works on your phone",
+        "body": "Designed mobile-first, with large touch targets and fast pages on slower connections."
+      },
+      "themes": {
+        "title": "Light and dark themes",
+        "body": "Comfortable for long study sessions, following your device setting by default."
+      },
+      "mcq": {
+        "title": "MCQ practice",
+        "body": "Timed practice with each test’s negative-marking rule and explanations for every answer."
+      },
+      "written": {
+        "title": "Written practice",
+        "body": "Written and problem-solving questions with feedback from instructors and graders."
+      },
+      "institutions": {
+        "title": "Coaching center workspaces",
+        "body": "Private workspaces where coaching centers run practice for their own students."
+      }
+    }
+  },
+  "solutions": {
+    "metaTitle": "For coaching centers and institutions",
+    "metaDescription": "Private NextCampus workspaces for coaching centers, institutions and independent instructors.",
+    "eyebrow": "For coaching centers",
+    "title": "Your own workspace on NextCampus",
+    "description": "Coaching centers and institutions get a private organization with their own members, roles and audit trail.",
+    "primary": "Create an account",
+    "secondary": "Talk to us",
+    "items": {
+      "coaching": {
+        "title": "Coaching centers",
+        "lead": "Manage batches and staff in one private workspace.",
+        "points": [
+          "Invite students and instructors by email",
+          "Single-use invitations that expire after 7 days",
+          "Your students’ data stays separate from other centers"
+        ]
+      },
+      "institutions": {
+        "title": "Schools and colleges",
+        "lead": "Support your students’ admission preparation with oversight.",
+        "points": [
+          "Separate admin and instructor/grader roles",
+          "Audit log of every membership change",
+          "Works in Bangla and English"
+        ]
+      },
+      "instructors": {
+        "title": "Independent instructors",
+        "lead": "A professional home for your private students.",
+        "points": [
+          "Create your organization in a minute",
+          "Sign in with Google",
+          "Grow into a team by inviting co-instructors"
+        ]
+      }
+    }
+  },
+  "pricing": {
+    "metaTitle": "Pricing",
+    "metaDescription": "NextCampus Free and Premium plans for admission test preparation, in Bangladeshi Taka.",
+    "eyebrow": "Pricing",
+    "title": "Simple plans in Taka",
+    "description": "Start free today. Premium arrives with full practice.",
+    "noticeTitle": "Premium is not on sale yet",
+    "noticeBody": "There is no checkout and nothing is charged. We will announce Premium’s price and payment options (including bKash) before it launches.",
+    "availableNow": "Available now",
+    "comingSoon": "Coming soon",
+    "paymentNote": "Prices are in Bangladeshi Taka (৳).",
+    "institutionsNote": "Coaching center or institution?",
+    "contactUs": "Contact us"
+  },
+  "contact": {
+    "metaTitle": "Contact",
+    "metaDescription": "Contact the NextCampus team about your account, plans or a coaching center partnership.",
+    "eyebrow": "Contact",
+    "title": "We’re here to help",
+    "description": "Write to us in Bangla or English.",
+    "emailTitle": "Email",
+    "responseTitle": "Response time",
+    "responseBody": "Usually within one business day.",
+    "securityTitle": "Security reports",
+    "securityBody": "Choose “Security or privacy” and we’ll route it to the right person."
+  },
+  "faq": {
+    "metaTitle": "FAQ",
+    "metaDescription": "Answers about NextCampus accounts, the admission catalog, pricing, language and privacy.",
+    "eyebrow": "FAQ",
+    "title": "Frequently asked questions",
+    "description": "Can’t find your answer? Write to us.",
+    "stillQuestions": "Still have questions?",
+    "contactUs": "Contact us",
+    "groups": [
+      {
+        "title": "Getting started",
+        "items": [
+          {
+            "q": "What is NextCampus?",
+            "a": "An admission test preparation platform for students in Bangladesh, covering university, engineering, medical and cluster admission tests."
+          },
+          {
+            "q": "What can I do today?",
+            "a": "Create a free account, browse the admission catalog and choose your language. Practice exams are being prepared and are not available yet."
+          },
+          {
+            "q": "How do I sign up?",
+            "a": "Continue with Google, or sign up with your email and a password and confirm your email address."
+          }
+        ]
+      },
+      {
+        "title": "Admission tests",
+        "items": [
+          {
+            "q": "Which admission tests are covered?",
+            "a": "The exam catalog lists every university and unit we are preparing practice for. The list grows over time."
+          },
+          {
+            "q": "Is the format information official?",
+            "a": "No. Format notes are general guidance. Rules change every year, so always check the university’s official admission circular."
+          },
+          {
+            "q": "Is NextCampus affiliated with these universities?",
+            "a": "No. NextCampus is independent and is not endorsed by any university listed."
+          }
+        ]
+      },
+      {
+        "title": "Plans and payment",
+        "items": [
+          {
+            "q": "How much does it cost?",
+            "a": "The Free plan costs ৳0. Premium will launch with full practice; its price will be announced first."
+          },
+          {
+            "q": "How will I pay?",
+            "a": "Payments are not open yet. We plan to support bKash when Premium launches."
+          }
+        ]
+      },
+      {
+        "title": "Privacy and language",
+        "items": [
+          {
+            "q": "Can other students see my information?",
+            "a": "No. Other students cannot see your profile, email or membership. This is enforced by database security rules, not just the app."
+          },
+          {
+            "q": "Can I use NextCampus in Bangla?",
+            "a": "Yes. Every page is available in Bangla and English. You can also choose Bangla or English digits in your settings."
+          },
+          {
+            "q": "I study at a coaching center. Can I use both?",
+            "a": "Yes. You can belong to the public practice space and your coaching center’s workspace, and switch between them from the header."
+          }
+        ]
+      }
+    ]
+  },
+  "legal": {
+    "eyebrow": "Legal",
+    "updated": "Last updated",
+    "privacy": {
+      "title": "Privacy policy",
+      "intro": "This policy explains what personal data NextCampus processes, why, and the choices you have.",
+      "sections": [
+        {
+          "heading": "Who we are",
+          "paragraphs": [
+            "NextCampus provides an online admission test preparation platform. For accounts created directly with us, NextCampus is responsible for your data. When a coaching center or institution manages its own workspace, it is responsible for the data it manages about its members, and NextCampus processes it on their behalf."
+          ]
+        },
+        {
+          "heading": "Data we collect",
+          "items": [
+            "Account data: name, display name, email address, profile photo from your sign-in provider, time zone, language and digit preferences.",
+            "Membership data: the workspaces you belong to, your role, and invitations sent to you.",
+            "Security data: sign-in events, password changes and administrative actions recorded in audit logs.",
+            "Messages you send us through the contact form."
+          ]
+        },
+        {
+          "heading": "How we use data",
+          "items": [
+            "To sign you in and enforce the access each workspace grants.",
+            "To send transactional emails such as verification, password reset and invitations.",
+            "To keep the platform secure and investigate abuse.",
+            "To send product updates, only if you opt in from your settings."
+          ]
+        },
+        {
+          "heading": "Who can see your data",
+          "paragraphs": [
+            "Other students never see your profile, email or membership. In a coaching center or institution workspace, its administrators and instructors can see the members of that workspace. We do not sell personal data.",
+            "We share data only with infrastructure providers that host the service (database, authentication, email delivery) under contracts that require them to protect it."
+          ]
+        },
+        {
+          "heading": "Retention",
+          "paragraphs": [
+            "Account data is kept while your account is active. Audit logs are kept to protect the integrity of the platform and may remain after your membership ends."
+          ]
+        },
+        {
+          "heading": "Your rights",
+          "paragraphs": [
+            "You can view and correct your profile in settings, and request a copy or deletion of your data through the contact page."
+          ]
+        }
+      ]
+    },
+    "terms": {
+      "title": "Terms of service",
+      "intro": "These terms govern your use of NextCampus. By creating an account you agree to them.",
+      "sections": [
+        {
+          "heading": "Accounts",
+          "paragraphs": [
+            "Provide accurate information and keep your password secure. You are responsible for activity under your account. Tell us immediately if you suspect unauthorized access."
+          ]
+        },
+        {
+          "heading": "Preparation, not official information",
+          "paragraphs": [
+            "NextCampus is an independent preparation service. It is not affiliated with any university or admission authority. Always rely on official admission circulars for dates, eligibility and rules."
+          ]
+        },
+        {
+          "heading": "Workspaces",
+          "paragraphs": [
+            "A coaching center or institution that creates a workspace is responsible for the members it invites and the roles it assigns."
+          ]
+        },
+        {
+          "heading": "Plans and payment",
+          "paragraphs": [
+            "The Free plan is free. Paid plans are not on sale yet; their prices and terms will be published before launch and apply only if you choose to buy."
+          ]
+        },
+        {
+          "heading": "Acceptable use",
+          "paragraphs": ["You must follow our Acceptable Use Policy."]
+        },
+        {
+          "heading": "Suspension and changes",
+          "paragraphs": [
+            "We may suspend accounts that break these terms or put others at risk. We will notify you of material changes to these terms before they take effect."
+          ]
+        }
+      ]
+    },
+    "acceptableUse": {
+      "title": "Acceptable use policy",
+      "intro": "NextCampus exists to help students prepare honestly. This policy describes conduct that is not allowed.",
+      "sections": [
+        {
+          "heading": "Integrity",
+          "items": [
+            "Do not share accounts or let someone else take a test for you.",
+            "Do not copy or redistribute NextCampus practice content."
+          ]
+        },
+        {
+          "heading": "Security",
+          "items": [
+            "Do not try to access another person’s or organization’s data.",
+            "Report suspected vulnerabilities through the contact page using the Security topic."
+          ]
+        },
+        {
+          "heading": "Abuse",
+          "items": [
+            "Do not send unsolicited invitations or spam.",
+            "Do not upload unlawful or hateful content."
+          ]
+        },
+        {
+          "heading": "Enforcement",
+          "paragraphs": [
+            "Violations may lead to removal of content and suspension of accounts or workspaces."
+          ]
+        }
+      ]
+    }
+  },
+  "adminDashboard": {
+    "metaTitle": "Administration",
+    "welcome": "Welcome back, {name}",
+    "description": "Manage who has access to your organization and keep an eye on administrative activity.",
+    "invite": "Invite people",
+    "summaryLabel": "Organization summary",
+    "stats": {
+      "students": "Students",
+      "graders": "Instructors/Graders",
+      "admins": "Admins",
+      "pending": "Pending invitations"
+    },
+    "activityTitle": "Recent activity",
+    "activityDescription": "The latest changes recorded in your audit log.",
+    "viewAll": "View all",
+    "stepsTitle": "Get your organization ready",
+    "stepsDescription": "Recommended next steps.",
+    "steps": {
+      "grader": "Invite at least one instructor or grader",
+      "students": "Invite your first students",
+      "secondAdmin": "Add a second admin for continuity"
+    },
+    "stepDone": "Completed:",
+    "stepTodo": "To do:",
+    "start": "Start"
+  },
+  "membersPage": {
+    "title": "Members",
+    "description": "Change roles or remove access. Every change is recorded in the audit log.",
+    "invite": "Invite people",
+    "emptyTitle": "No members yet",
+    "emptyDescription": "Invite people to get started.",
+    "unknown": "Unknown user",
+    "you": "(you)",
+    "suspended": "Suspended",
+    "joined": "Joined {date}"
+  },
+  "invitationsPage": {
+    "title": "Invitations",
+    "description": "Invitations are tied to an email address, expire after 7 days and can be used once.",
+    "formTitle": "Invite someone",
+    "formDescription": "They’ll receive an email with a secure link to join {organization}.",
+    "historyTitle": "Invitation history",
+    "emptyTitle": "No invitations yet",
+    "emptyDescription": "Invitations you send will be listed here.",
+    "status": {
+      "pending": "Pending",
+      "accepted": "Accepted",
+      "declined": "Declined",
+      "revoked": "Revoked",
+      "expired": "Expired"
+    },
+    "sent": "Sent {date}",
+    "expires": "Expires {date}"
+  },
+  "auditPage": {
+    "title": "Audit log",
+    "description": "An append-only record of membership, invitation and organization changes. Times are shown in your time zone.",
+    "pagination": "Audit log pages",
+    "page": "Page {page} of {total}",
+    "previous": "Previous",
+    "next": "Next"
+  },
+  "orgSettingsPage": {
+    "title": "Organization settings",
+    "description": "Details shown to your members and on invitations.",
+    "profileTitle": "Profile",
+    "profileDescription": "Workspace address <slug></slug> · created {date}"
+  },
+  "dashboards": {
+    "roster": {
+      "privateTitle": "Member list is private",
+      "privateBody": "In NextCampus Public, students’ profiles and emails are never shown to other members.",
+      "emptyTitle": "Nobody here yet",
+      "unknown": "Unknown user"
+    },
+    "instructor": {
+      "metaTitle": "Instructor home",
+      "title": "Hello, {name}",
+      "description": "Your teaching workspace: the students you prepare and the practice you run.",
+      "summaryLabel": "Workspace summary",
+      "students": "Students",
+      "graders": "Instructors/Graders",
+      "assessmentsTitle": "Practice sets",
+      "assessmentsEmptyTitle": "No practice sets yet",
+      "assessmentsEmptyBody": "Question banks and practice authoring are being built. Your workspace is ready for when they arrive.",
+      "rosterTitle": "Student roster",
+      "rosterDescription": "{count} students in {organization}.",
+      "rosterEmpty": "Ask an organization admin to invite students."
+    },
+    "review": {
+      "metaTitle": "Grading desk",
+      "title": "Grading desk · {name}",
+      "description": "Review written answers and invigilate practice sessions.",
+      "summaryLabel": "Workspace summary",
+      "candidates": "Students",
+      "graders": "Instructors/Graders",
+      "queueTitle": "Review queue",
+      "queueEmptyTitle": "Nothing to review",
+      "queueEmptyBody": "Written answers will appear here once practice is running.",
+      "rosterTitle": "Students",
+      "rosterDescription": "Students whose work you may review.",
+      "rosterEmpty": "No students have joined this organization yet."
+    },
+    "student": {
+      "metaTitle": "My preparation",
+      "title": "Hi, {name}",
+      "description": "Practice published by your institution, results and announcements in one place.",
+      "descriptionPublic": "Your admission preparation space on NextCampus.",
+      "upcomingTitle": "Practice",
+      "timezoneNote": "Times are shown in {timezone}.",
+      "upcomingEmptyTitle": "Practice exams coming soon",
+      "upcomingEmptyPublic": "MCQ and written practice for your target universities will appear here when it launches.",
+      "upcomingEmptyInstitution": "When your instructors publish practice for you, it will appear here.",
+      "catalogTitle": "Explore admission tests",
+      "catalogBody": "See every university and unit in the catalog, with subjects and format notes.",
+      "catalogCta": "Open the catalog",
+      "enrollmentTitle": "Your membership",
+      "organization": "Workspace",
+      "type": "Type",
+      "role": "Role",
+      "joined": "Joined",
+      "privacyNote": "Other students in NextCampus Public cannot see your name, email or activity.",
+      "announcementsTitle": "Announcements",
+      "announcementsEmpty": "No announcements yet.",
+      "viewAll": "View all"
+    }
+  },
+  "myInvitations": {
+    "title": "Your invitations",
+    "description": "Pending invitations sent to {email}.",
+    "emptyTitle": "No pending invitations",
+    "emptyDescription": "When a coaching center or institution invites you, it will appear here.",
+    "emptyCta": "Join or create a workspace",
+    "invitedBy": "Invited by {name}",
+    "expires": "Expires {date}"
+  },
+  "settings": {
+    "nav": {
+      "label": "Account settings",
+      "profile": "Profile",
+      "security": "Security",
+      "organizations": "Workspaces"
+    },
+    "profile": {
+      "title": "Profile",
+      "description": "How you appear on NextCampus.",
+      "preferencesTitle": "Language and numbers",
+      "preferencesDescription": "Saved to your account, so they follow you on every device."
+    },
+    "security": {
+      "title": "Security",
+      "description": "Sign-in methods, password and recent account activity.",
+      "methodsTitle": "Sign-in methods",
+      "methodsDescription": "Your account email is {email}.",
+      "providers": {
+        "email": "Email and password",
+        "google": "Google"
+      },
+      "emailVerified": "Email verified",
+      "emailNotVerified": "Email not verified",
+      "changePassword": "Change password",
+      "setPassword": "Set a password",
+      "changePasswordHint": "Choose a strong password you don’t use anywhere else.",
+      "setPasswordHint": "Add a password so you can also sign in with your email address.",
+      "activityTitle": "Recent security activity",
+      "activityDescription": "Times shown in {timezone}.",
+      "activityEmpty": "No recent activity.",
+      "signOutTitle": "Sign out",
+      "signOutDescription": "End your session on this device.",
+      "signOut": "Sign out",
+      "signingOut": "Signing out"
+    },
+    "organizations": {
+      "title": "Workspaces",
+      "description": "Where you practise and the role you have in each.",
+      "create": "Create organization",
+      "joinPublicTitle": "Practise on NextCampus Public",
+      "joinPublicBody": "Join the free public practice space alongside your coaching center or institution.",
+      "joined": "Joined {date}",
+      "suspended": "Suspended",
+      "publicCannotLeave": "Your public practice membership stays with your account."
+    }
+  },
+  "platform": {
+    "nav": {
+      "label": "Platform",
+      "overview": "Overview",
+      "catalog": "Admission catalog"
+    },
+    "console": {
+      "eyebrow": "Platform Admin",
+      "title": "Platform console",
+      "description": "Organizations, users and platform-wide activity.",
+      "summaryLabel": "Platform summary",
+      "organizations": "Organizations",
+      "users": "Users",
+      "suspended": "Suspended organizations",
+      "orgsTitle": "Organizations",
+      "orgsDescription": "Suspending an organization immediately removes every member’s permissions.",
+      "memberCount": "{count} members",
+      "created": "Created {date}",
+      "system": "System",
+      "status": {
+        "active": "Active",
+        "suspended": "Suspended"
+      },
+      "systemProtected": "System organization — cannot be suspended",
+      "activityTitle": "Recent organization activity",
+      "contactTitle": "Contact requests",
+      "contactDescription": "Latest submissions from the public contact form.",
+      "contactEmpty": "No contact requests yet.",
+      "noOrganization": "No organization"
+    }
+  },
+  "onboarding": {
+    "profile": {
+      "eyebrow": "Almost there",
+      "title": "Complete your profile",
+      "description": "Your name appears on your results. Your time zone keeps practice schedules accurate.",
+      "signedInAs": "Signed in as {email}"
+    },
+    "workspace": {
+      "title": "Choose where to practise",
+      "description": "Students practise on NextCampus Public. Coaching centers can also invite you to their own workspace.",
+      "publicTitle": "Practise on NextCampus Public",
+      "publicBody": "Free for every student. Your profile stays private from other students.",
+      "invitationsTitle": "Your invitations",
+      "invitationsFor": "Sent to {email}",
+      "waitingTitle": "Studying at a coaching center?",
+      "waitingBody": "Ask them to invite <strong>{email}</strong>. Invitations also appear in your <inbox>invitations inbox</inbox>.",
+      "createTitle": "Run a coaching center or institution?",
+      "createBody": "Create a private workspace and invite your team and students."
+    }
+  },
+  "invitePage": {
+    "metaTitle": "Invitation",
+    "notFoundTitle": "Invitation not found",
+    "notFoundBody": "This link is invalid. Check that you copied the full link, or ask the sender for a new invitation.",
+    "used": "This invitation has already been used, declined or revoked.",
+    "expired": "This invitation has expired. Ask an administrator to send a new one.",
+    "eyebrow": "You’re invited",
+    "title": "Join {organization}",
+    "asRole": "as <role></role>",
+    "forEmail": "This invitation is for <strong>{email}</strong>.",
+    "createAccount": "Create account",
+    "signIn": "Sign in",
+    "verifyFirst": "Verify your email address first, then return to this link.",
+    "signedInAs": "Signed in as {email}"
+  }
+}

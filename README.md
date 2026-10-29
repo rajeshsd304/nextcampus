@@ -1,10 +1,17 @@
 # NextCampus
 
-Secure, trusted, modern digital assessments. NextCampus is a multi-tenant online examination platform for
-universities, coaching centers, training organizations and independent instructors.
+Admission-test preparation for Bangladesh. Students practise for university admission tests (DU, BUET, RU, CU,
+medical, the GST cluster and more) in Bangla or English. The platform is multi-tenant: the main product is the
+public practice space that every self-signup student joins, and coaching centers can run their own private
+organization alongside it.
 
-This repository contains **Phase 1**: foundation, identity and multi-tenancy, authentication and access control,
-and the product shell (public site plus role-aware dashboards).
+What has been built so far:
+
+- **Phase 1**: foundation, identity and multi-tenancy, authentication and access control, and the product shell.
+- **Phase 1.5**: the public organization, bilingual UI (bn/en), simplified role labels, the admission-market
+  redesign, and a database-backed admission catalog that platform admins manage.
+
+Exams, question banks, grading and payments (bKash) come in later phases.
 
 ## Stack and pinned versions
 
@@ -81,19 +88,90 @@ Authentication → Email Templates (Confirm signup and Reset password) and enabl
 
 ## Database
 
-| Command            | Purpose                                                                 |
-| ------------------ | ----------------------------------------------------------------------- |
-| `npm run db:start` | Start the local Supabase stack (Docker)                                 |
-| `npm run db:reset` | Recreate the local DB: all migrations, then `supabase/seed.sql`         |
-| `npm run db:push`  | Apply migrations to the linked hosted project (`supabase link` first)   |
-| `npm run db:types` | Generate types from the local DB into `src/types/database.generated.ts` |
+| Command                | Purpose                                                                       |
+| ---------------------- | ----------------------------------------------------------------------------- |
+| `npm run db:start`     | Start the local Supabase stack (Docker)                                       |
+| `npm run db:reset`     | Recreate the local DB: migrations → `reference-data/catalog.sql` → `seed.sql` |
+| `npm run db:push`      | Apply migrations to the linked hosted project (`supabase link` first)         |
+| `npm run db:reference` | Load the catalog reference data into `$DATABASE_URL` (idempotent)             |
+| `npm run db:types`     | Generate types from the local DB into `src/types/database.generated.ts`       |
 
 Migrations (`supabase/migrations`):
 
-1. `20261029000100_foundation.sql`: enums, tables, constraints, indexes and least-privilege grants
-2. `20261029000200_rls.sql`: authorization helpers (`private` schema) and RLS policies on every table
-3. `20261029000300_rpc.sql`: profile provisioning trigger, audited SECURITY DEFINER RPCs
-4. `20261029000400_permissions.sql`: role → permission matrix (reference data for every environment)
+| File                                        | Phase | Purpose                                                                           |
+| ------------------------------------------- | ----- | --------------------------------------------------------------------------------- |
+| `20261029000100_foundation.sql`             | 1     | Enums, tables, constraints, indexes, least-privilege grants                       |
+| `20261029000200_rls.sql`                    | 1     | Authorization helpers (`private` schema), RLS on every table                      |
+| `20261029000300_rpc.sql`                    | 1     | Profile provisioning trigger, audited SECURITY DEFINER RPCs                       |
+| `20261029000400_permissions.sql`            | 1     | Role → permission matrix (reference data)                                         |
+| `20261030000100_public_org.sql`             | 1.5   | `organizations.is_system`, the public org, auto-enrollment, roster RLS tightening |
+| `20261030000200_locale_preferences.sql`     | 1.5   | `profiles.preferred_locale`, `profiles.preferred_numerals`                        |
+| `20261030000300_catalog.sql`                | 1.5   | Catalog tables, public-read/admin-write RLS, audit triggers, reorder RPC          |
+| `20261030000400_notification_templates.sql` | 1.5   | Translatable notifications (`template` + `params`)                                |
+
+Every Phase 1.5 migration is additive and has a rollback script in `supabase/rollbacks/<migration>.down.sql`.
+Run the rollbacks in reverse order, then delete the matching rows from `supabase_migrations.schema_migrations`.
+`tests/db/migrations.test.ts` checks that the migrations apply on top of a Phase 1 database that already holds
+data, and that up → down → up works.
+
+### The public organization (B2C)
+
+- **The org itself:** "NextCampus Public" (slug `public`) is a system organization (`organizations.is_system`)
+  created by migration in every environment.
+- **Protection:** triggers stop anyone from renaming it, changing its slug, suspending it or deleting it, the
+  table owner included. Members cannot leave it, and the slug `public` is reserved.
+- **Automatic enrollment:** the profile-provisioning trigger enrolls every new auth user as a `student` and
+  records `member.auto_enrolled` in the audit log. Enrollment is idempotent.
+- **Invited users:** anyone who signs up while holding a pending invitation is left to the inviting
+  organization. They can opt in later with `public.join_public_organization()` (audited as
+  `member.joined_public`).
+- **Privacy:** inside a system org, `members.read` does not grant roster or profile visibility.
+  `private.can_read_roster()` requires `members.manage` there, so students, and future graders, see only their
+  own membership and profile. `tests/db/public-org.test.ts` covers this.
+- **Multiple workspaces:** a user can belong to the public org and to any number of coaching-center orgs. The org
+  switcher lists public practice first. With no last-used workspace, `/dashboard` prefers the institution
+  workspace.
+- **Coaching centers:** "Join or create a workspace" (`/onboarding/organization`) still offers organization
+  creation, but students never have to go through it.
+
+### Admission catalog
+
+| Table                   | Notes                                                                                            |
+| ----------------------- | ------------------------------------------------------------------------------------------------ |
+| `university_categories` | Lookup table (key + bn/en names). Adding a category needs no code change.                        |
+| `universities`          | `slug`, `name_en`, `name_bn`, `short_code`, `category_key`, `website`, `is_active`, `sort_order` |
+| `subjects`              | Bilingual reference list                                                                         |
+| `exam_targets`          | Per-university admission units: bn/en names, descriptions and format notes, `negative_marking`   |
+| `exam_target_subjects`  | Many-to-many link between exam targets and subjects                                              |
+
+- **Read access:** `anon` and `authenticated` see active rows only. Visibility cascades: an inactive category
+  hides its universities, and an inactive university hides its exam targets.
+- **Write access:** platform admins only, enforced by RLS. Column grants keep `created_at`/`updated_at`
+  server-assigned.
+- **Audit:** every insert, update and delete is audited by trigger, e.g. `university.created`,
+  `university.deactivated`, `exam_target.reordered`.
+- **Deletion:** a row that is still referenced cannot be deleted (foreign key `RESTRICT`); deactivate it instead.
+- **Data-driven app:** the public catalog (`/exams`, `/exams/[university]`), its filters, the homepage university
+  strip and `sitemap.xml` all read from the database through an anonymous client. No university name, slug or
+  count appears in application code or tests.
+
+**Reference data.** `supabase/reference-data/catalog.sql` holds the starter list of categories, universities,
+subjects and exam targets. It only inserts rows that are missing, so it is safe in any environment and never
+overwrites edits made in the UI. It loads automatically on `db:reset`. In production, load it once with
+`DATABASE_URL=… npm run db:reference`. Format notes in it are deliberately general: verify them against official
+circulars before launch.
+
+**How a platform admin adds a university:**
+
+1. Go to `/platform/catalog`, then **Add university**.
+2. Fill in the Bangla and English names, the slug (used in `/exams/<slug>`), the short code and the category,
+   then save.
+3. Add at least one exam target for it (**Add exam target**). The public catalog lists universities that have
+   targets.
+4. It appears immediately on `/exams`, in the filters, in the homepage strip and in `sitemap.xml`, in both
+   languages.
+5. **Deactivate** hides it everywhere without deleting anything, and **Activate** brings it back. Every change
+   is in the audit log shown on the same page.
 
 ### Seeded non-production accounts
 
@@ -102,15 +180,83 @@ Password for every account: `NextCampus-Dev-2026!`
 
 | Email                         | Role                                                          |
 | ----------------------------- | ------------------------------------------------------------- |
-| `superadmin@nextcampus.test`  | Super Administrator (platform console)                        |
+| `superadmin@nextcampus.test`  | Platform Admin (`/platform`, `/platform/catalog`)             |
 | `admin@northbridge.test`      | Organization Admin, Northbridge University                    |
-| `instructor@northbridge.test` | Instructor, Northbridge University                            |
-| `reviewer@northbridge.test`   | Invigilator/Reviewer, Northbridge University                  |
+| `instructor@northbridge.test` | Instructor/Grader (instructor), Northbridge University        |
+| `reviewer@northbridge.test`   | Instructor/Grader (invigilator), Northbridge University       |
 | `student@northbridge.test`    | Student, Northbridge University                               |
 | `admin@apex.test`             | Organization Admin, Apex Coaching Centre (second tenant)      |
 | `newuser@nextcampus.test`     | Profile incomplete; pending student invitation to Northbridge |
+| `learner@nextcampus.test`     | Student, NextCampus Public                                    |
+| `learner2@nextcampus.test`    | Student, NextCampus Public (for privacy checks)               |
+| `dual@nextcampus.test`        | Student in NextCampus Public **and** Apex Coaching Centre     |
 
-Newcomer invitation link: `http://localhost:3000/invite/5eed5eed5eed5eed5eed5eed5eed5eed5eed5eed5eed5eed5eed5eed5eed5eed`
+Phase 1 seed accounts keep their Phase 1 memberships: the seed removes the public enrollment the trigger adds for
+them. Newcomer invitation link:
+`http://localhost:3000/invite/5eed5eed5eed5eed5eed5eed5eed5eed5eed5eed5eed5eed5eed5eed5eed5eed`
+
+## Internationalization (bn / en)
+
+- **Library and locales:** next-intl 4 without URL prefixes, so every existing route still works. Locales are
+  `bn` (the default) and `en`, configured in `src/i18n/config.ts`.
+- **How the locale is chosen:**
+  1. the `NEXT_LOCALE` cookie;
+  2. otherwise `bn`.
+
+  When someone signs in, `profiles.preferred_locale` is copied into the cookie. If the profile has no preference
+  yet, the cookie's value is saved to the profile.
+
+- **Language switcher:** it sits in the header, the footer, the auth pages and the app shell. It is a plain
+  `<form>` that posts to a Server Action, so it works without JavaScript and updates both the cookie and the
+  profile.
+- **Digits:** `profiles.preferred_numerals` (Settings → Language and numbers) chooses Bangla digits (১২৩) or
+  English digits (123). Bangla defaults to Bangla digits.
+- **Formatting:** `src/lib/i18n-format.ts` formats dates in the viewer's time zone (`Asia/Dhaka` for visitors),
+  numbers, and Taka with ৳ using the active locale and digits.
+- **Fonts:** Hind Siliguri (Bengali + Latin) through `next/font`, alongside Inter and Plus Jakarta Sans. Under
+  `html:lang(bn)`, Tailwind's line-height and tracking variables are raised, so Bengali vowel signs never clip.
+- **Messages:** `messages/en.json` and `messages/bn.json` are typed. A wrong key is a type error. Only the
+  namespaces in `CLIENT_NAMESPACES` are sent to the browser.
+- **Message keys as data:** Zod schemas, server actions and database error codes return message keys
+  (`validation.*`, `errors.*`, …), and the UI translates them.
+- **Notifications:** notifications store a `template` key and `params`, so they render in the reader's
+  language.
+- **Enforcement:**
+  - ESLint `react/jsx-no-literals` fails the build on hard-coded JSX text.
+  - `tests/unit/i18n.test.ts` fails when:
+    - a key, placeholder or rich-text tag exists in one locale but not the other;
+    - a message is empty;
+    - a database error code or validation key has no translation.
+
+**Adding a translation:** add the key to both `messages/en.json` and `messages/bn.json` (the tests require
+both), then use it with `getTranslations("namespace")` in Server Components or `useTranslations("namespace")` in
+Client Components. If a Client Component needs a new namespace, add it to `CLIENT_NAMESPACES` in
+`src/i18n/messages.ts`.
+
+**Adding a locale:**
+
+1. Add it to `LOCALES`, `INTL_LOCALE` and `LOCALE_NATIVE_NAMES` in `src/i18n/config.ts`.
+2. Create `messages/<locale>.json` with every key.
+3. Add it to the `catalogs` map in `tests/unit/i18n.test.ts`.
+4. Add `name_<locale>` columns to the catalog tables if catalog data should be translated too.
+
+The database accepts any `xx` / `xx-YY` value in `preferred_locale`, so no migration is needed for the profile
+preference.
+
+### Roles in the UI
+
+The underlying roles, the permission matrix and RLS are unchanged. The UI shows four labels, defined in
+`src/features/access/roles.ts`, with their text in `messages/*.json` under `roles.*`:
+
+| UI label           | Database role(s)            |
+| ------------------ | --------------------------- |
+| Student            | `student`                   |
+| Instructor/Grader  | `instructor`, `invigilator` |
+| Organization Admin | `org_admin`                 |
+| Platform Admin     | `platform_admins` row       |
+
+When an admin invites someone as or changes someone to "Instructor/Grader", an existing instructor or
+invigilator keeps their current underlying role, and anyone else becomes `instructor`.
 
 ## Quality checks
 
@@ -118,7 +264,7 @@ Newcomer invitation link: `http://localhost:3000/invite/5eed5eed5eed5eed5eed5eed
 npm run lint          # ESLint (next/core-web-vitals, typescript, jsx-a11y, react-hooks)
 npm run typecheck     # next typegen + tsc --noEmit (strict)
 npm run format:check  # Prettier
-npm test              # Vitest: unit tests + database/RLS tests (PGlite, no Docker needed)
+npm test              # Vitest: unit, i18n-parity and database/RLS/migration tests (PGlite, no Docker needed)
 npm run build
 npm run test:e2e      # Playwright (desktop + mobile); build first with the same NEXT_PUBLIC_* env
 E2E_SUPABASE=1 npm run test:e2e   # also runs full-stack flows against the seeded local Supabase
@@ -132,23 +278,30 @@ rolled-back transaction, exactly as PostgREST would.
 ## Architecture
 
 ```
+messages/                 en.json, bn.json — every UI string (typed; parity-tested)
 src/
   app/                    routes only: thin pages that compose features
-    (marketing)/          public site (static)
+    (marketing)/          public site: home, exams (DB catalog), features, pricing, faq, contact, legal
     (auth)/               sign-in, sign-up, password reset, email confirmation
-    (app)/                authenticated shell: dashboard router, /o/[orgSlug]/…, settings, notifications, platform
+    (app)/                authenticated shell: dashboard router, /o/[orgSlug]/…, settings, notifications,
+                          platform (console + catalog management)
     auth/callback|confirm route handlers for OAuth PKCE and email token-hash verification
     onboarding/, invite/[token]/
   features/<feature>/     schemas.ts (zod), actions.ts ("use server"), server/ (queries, guards), components/
-    access/               roles and permission matrix (mirrors the DB)
-    auth/  profiles/  organizations/  invitations/  notifications/  audit/  contact/  billing/  marketing/  dashboards/
+    access/               roles, UI role labels, permission matrix (mirrors the DB)
+    auth/ profiles/ organizations/ invitations/ notifications/ audit/ contact/ billing/
+    catalog/              admission catalog: public queries, admin actions/forms
+    preferences/          locale + digit preferences (cookie ↔ profile)
+    marketing/ dashboards/
+  i18n/                   next-intl config, request resolution, message typing
   components/ui/          accessible primitives (Button, FormField, Dialog, DropdownMenu, …)
-  components/layout/      site header/footer, theme, logo
+  components/layout/      site header/footer, theme toggle, language switcher, logo
   components/app-shell/   authenticated header, org switcher, user menu, side nav
-  lib/                    env validation, Supabase clients, errors, ActionResult, safe redirects, email provider
+  lib/                    env, Supabase clients (server, proxy, anonymous public), errors, ActionResult,
+                          safe redirects, email provider, i18n formatting
   types/database.ts       Supabase types (generated format)
   proxy.ts                session refresh + optimistic redirects
-supabase/                 config.toml, migrations, seed.sql, email templates
+supabase/                 config.toml, migrations/, rollbacks/, reference-data/, seed.sql, email templates
 tests/unit, tests/db, e2e/
 ```
 
@@ -189,16 +342,22 @@ the old one. The raw link is emailed through the provider abstraction and also s
 - **Payments** (`src/features/billing`): a `PaymentProvider` contract and plan catalog.
   `getPaymentProvider()` returns `null` until a provider is implemented, and the UI does not offer checkout.
 
-## Known limitations (Phase 1)
+## Known limitations
 
-- Assessment authoring, delivery, proctoring and results are Phase 2. Dashboards show live identity and
-  organization data, with honest empty states where exam data will appear. The public exam catalog describes
-  assessment formats; it does not list live exams.
-- `src/types/database.ts` is hand-maintained in the generated format, because no database was available when
-  it was written. Run `npm run db:types` against a running stack and reconcile.
-- Sign-in audit events are recorded by the app after a successful sign-in, through a throttled RPC that is
-  limited to the caller's own account. Supabase's built-in auth audit log remains the authoritative source.
-- Billing has no live provider.
-- Legal page copy is a reasonable baseline and should be reviewed by counsel before launch.
-- Rate limiting relies on Supabase Auth limits plus per-RPC throttles. Consider an edge rate limiter for the
-  contact form in production.
+- **Not built yet:** exams, question banks, grading and payments are not part of Phases 1–1.5. Dashboards,
+  pricing and the catalog say "coming soon" where those features will go. The site shows no fake statistics,
+  testimonials or prices.
+- **One indexable language:** the locale lives in a cookie, not the URL, so search engines index only the
+  default (Bangla) version. Language-prefixed URLs with `hreflang` would be needed for bilingual SEO.
+- **Dynamic pages:** marketing pages now render per request, because they read the locale cookie and the catalog.
+  They ship no extra client JavaScript.
+- **Share image:** the Open Graph image is in English, because the image renderer has no Bengali font loaded.
+- **Reference data needs checking:** university websites, unit groupings and format notes are starter data and
+  must be checked against official circulars. Platform admins can correct them in the UI.
+- **Database types:** `src/types/database.ts` is maintained by hand in the generated format. Run
+  `npm run db:types` against a running stack and reconcile.
+- **Phase 1 notifications stay English:** notifications created before the template migration have no template
+  and keep their English text.
+- **Sign-in audit source:** sign-in audit events are recorded by the app. Supabase's auth audit log remains the
+  authoritative record.
+- **Legal copy:** the legal pages, in both languages, need review by counsel before launch.

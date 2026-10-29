@@ -15,6 +15,20 @@ const config = [
     },
   },
   {
+    // All user-facing text must come from messages/<locale>.json (see README › i18n).
+    files: ["src/**/*.tsx"],
+    rules: {
+      "react/jsx-no-literals": [
+        "error",
+        {
+          noStrings: false,
+          ignoreProps: true,
+          allowedStrings: ["·", "—", "→", "←", "+", "(", ")", "/", ":", "%"],
+        },
+      ],
+    },
+  },
+  {
     ignores: [
       ".next/**",
       "node_modules/**",

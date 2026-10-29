@@ -2,6 +2,7 @@ import type { Enums } from "@/types/database";
 
 export type OrganizationType = Enums<"organization_type">;
 
+/** Labels: messages `orgTypes.<type>`. */
 export const ORGANIZATION_TYPES = [
   "university",
   "coaching_center",
@@ -10,20 +11,14 @@ export const ORGANIZATION_TYPES = [
   "other",
 ] as const satisfies readonly OrganizationType[];
 
-export const ORGANIZATION_TYPE_LABELS: Record<OrganizationType, string> = {
-  university: "University",
-  coaching_center: "Coaching center",
-  training_organization: "Training organization",
-  independent_instructor: "Independent instructor",
-  other: "Other",
-};
-
+/** Mirrors the reserved list in public.create_organization(). */
 export const RESERVED_SLUGS = new Set([
   "admin",
   "api",
   "app",
   "auth",
   "dashboard",
+  "exams",
   "help",
   "invite",
   "invitations",
@@ -32,6 +27,7 @@ export const RESERVED_SLUGS = new Set([
   "notifications",
   "onboarding",
   "platform",
+  "public",
   "settings",
   "sign-in",
   "sign-up",

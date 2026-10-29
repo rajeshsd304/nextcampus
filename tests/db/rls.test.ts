@@ -27,6 +27,15 @@ const EXPOSED_TABLES = [
   "contact_requests",
 ];
 
+// Phase 1.5 catalog tables: anon may read active rows (see catalog.test.ts).
+const CATALOG_TABLES = [
+  "university_categories",
+  "universities",
+  "subjects",
+  "exam_targets",
+  "exam_target_subjects",
+];
+
 describe("schema hardening", () => {
   it("enables RLS on every table in the public schema", async () => {
     const { rows } = await db.query<{ relname: string; relrowsecurity: boolean }>(
@@ -34,11 +43,11 @@ describe("schema hardening", () => {
        from pg_class c join pg_namespace n on n.oid = c.relnamespace
        where n.nspname = 'public' and c.relkind = 'r'`,
     );
-    expect(rows.map((r) => r.relname).sort()).toEqual([...EXPOSED_TABLES].sort());
+    expect(rows.map((r) => r.relname).sort()).toEqual([...EXPOSED_TABLES, ...CATALOG_TABLES].sort());
     for (const row of rows) expect(row.relrowsecurity, row.relname).toBe(true);
   });
 
-  it("gives anon no table access at all", async () => {
+  it("gives anon no access to any identity or tenancy table", async () => {
     for (const table of EXPOSED_TABLES) {
       await expect(as(db, "anon", (tx) => tx.query(`select 1 from public.${table} limit 1`))).rejects.toThrow(
         /permission denied/,
@@ -252,9 +261,13 @@ describe("tenant isolation", () => {
   });
 
   it("super admins can see every tenant; contact requests are super-admin only", async () => {
+    const total = await db.query<{ count: number }>(
+      `select count(*)::int as count from public.organizations`,
+    );
+    expect(total.rows[0]?.count).toBeGreaterThanOrEqual(3);
     await as(db, users.superAdmin, async (tx) => {
       const res = await tx.query(`select id from public.organizations`);
-      expect(res.rows).toHaveLength(2);
+      expect(res.rows).toHaveLength(total.rows[0]!.count);
     });
     await as(db, users.northAdmin, async (tx) => {
       const res = await tx.query(`select id from public.contact_requests`);

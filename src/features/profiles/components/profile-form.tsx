@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
 import { useEffect, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { Alert } from "@/components/ui/alert";
@@ -9,6 +10,7 @@ import { FormField } from "@/components/ui/form-field";
 import { Input, Select } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/misc";
 import { FormError } from "@/features/auth/components/form-error";
+import { useMessageText } from "@/i18n/use-message-text";
 import { applyActionErrors } from "@/lib/forms";
 import { completeOnboardingAction, updateProfileAction } from "../actions";
 import { profileSettingsSchema, type ProfileSettingsInput } from "../schemas";
@@ -24,6 +26,8 @@ export function ProfileForm({
   timeZones: string[];
   defaults: ProfileSettingsInput;
 }) {
+  const t = useTranslations("profileForm");
+  const text = useMessageText();
   const [pending, startTransition] = useTransition();
   const [saved, setSaved] = useState<string | null>(null);
 
@@ -31,6 +35,7 @@ export function ProfileForm({
     resolver: zodResolver(profileSettingsSchema),
     defaultValues: defaults,
   });
+  const { errors } = form.formState;
 
   // Pre-select the browser's time zone during onboarding when none is stored yet.
   useEffect(() => {
@@ -38,7 +43,6 @@ export function ProfileForm({
     const detected = Intl.DateTimeFormat().resolvedOptions().timeZone;
     if (timeZones.includes(detected)) form.setValue("timezone", detected);
   }, [form, mode.kind, timeZones]);
-  const { errors } = form.formState;
 
   const onSubmit = form.handleSubmit((values) => {
     setSaved(null);
@@ -51,7 +55,7 @@ export function ProfileForm({
             )
           : await updateProfileAction(values);
       if (!result) return;
-      if (result.ok) setSaved(result.message ?? "Saved.");
+      if (result.ok) setSaved(text(result.message) ?? t("saved"));
       else applyActionErrors(form, result, ["fullName", "displayName", "timezone"]);
     });
   });
@@ -65,14 +69,14 @@ export function ProfileForm({
       ) : null}
       <FormError message={errors.root?.server?.message} />
       <div className="grid gap-5 sm:grid-cols-2">
-        <FormField id="fullName" label="Full name" error={errors.fullName?.message}>
+        <FormField id="fullName" label={t("fullName")} error={errors.fullName?.message}>
           <Input autoComplete="name" {...form.register("fullName")} />
         </FormField>
         <FormField
           id="displayName"
-          label="Display name"
+          label={t("displayName")}
           optional
-          description="Shown to others in your organizations."
+          description={t("displayNameHint")}
           error={errors.displayName?.message}
         >
           <Input autoComplete="nickname" {...form.register("displayName")} />
@@ -80,8 +84,8 @@ export function ProfileForm({
       </div>
       <FormField
         id="timezone"
-        label="Time zone"
-        description="Exam schedules and deadlines are shown in this time zone."
+        label={t("timezone")}
+        description={t("timezoneHint")}
         error={errors.timezone?.message}
       >
         <Select {...form.register("timezone")}>
@@ -97,11 +101,11 @@ export function ProfileForm({
           <input
             id="marketingOptIn"
             type="checkbox"
-            className="border-input mt-0.5 size-4 rounded accent-indigo-600"
+            className="border-input mt-1 size-5 shrink-0 rounded accent-indigo-600"
             {...form.register("marketingOptIn")}
           />
           <label htmlFor="marketingOptIn" className="text-muted-foreground text-sm">
-            Send me occasional product updates from NextCampus.
+            {t("marketingOptIn")}
           </label>
         </div>
       ) : null}
@@ -111,8 +115,8 @@ export function ProfileForm({
         className={mode.kind === "onboarding" ? "w-full" : undefined}
         disabled={pending}
       >
-        {pending ? <Spinner label="Saving" /> : null}
-        {mode.kind === "onboarding" ? "Continue" : "Save changes"}
+        {pending ? <Spinner label={t("saving")} /> : null}
+        {mode.kind === "onboarding" ? t("continue") : t("save")}
       </Button>
     </form>
   );

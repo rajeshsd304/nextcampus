@@ -1,56 +1,40 @@
+/**
+ * Student plans (informational). Prices are in BDT; `null` means the price has
+ * not been announced. Copy lives in messages `plans.<id>`. No checkout exists
+ * until a payment provider (bKash) is integrated.
+ */
 export type Plan = {
-  id: "starter" | "institution" | "enterprise";
-  name: string;
-  tagline: string;
-  priceMonthly: number | null;
-  audience: string;
-  features: string[];
-  cta: { label: string; href: string };
+  id: "free" | "premium";
+  priceBdt: number | null;
+  /** Feature keys under messages `plans.features`. */
+  features: readonly PlanFeature[];
+  status: "available" | "comingSoon";
   highlighted?: boolean;
 };
 
-export const PLANS: Plan[] = [
+export type PlanFeature =
+  | "account"
+  | "catalog"
+  | "bilingual"
+  | "practiceSamples"
+  | "fullPractice"
+  | "modelTests"
+  | "writtenFeedback"
+  | "analytics"
+  | "leaderboard";
+
+export const PLANS: readonly Plan[] = [
   {
-    id: "starter",
-    name: "Starter",
-    tagline: "For independent instructors running their first secure exams.",
-    priceMonthly: 0,
-    audience: "Up to 50 candidates",
-    features: [
-      "Unlimited practice assessments",
-      "Role-based access for one organization",
-      "Email and Google sign-in",
-      "Community support",
-    ],
-    cta: { label: "Start free", href: "/sign-up" },
+    id: "free",
+    priceBdt: 0,
+    features: ["account", "catalog", "bilingual", "practiceSamples"],
+    status: "available",
   },
   {
-    id: "institution",
-    name: "Institution",
-    tagline: "For coaching centers and departments that need oversight.",
-    priceMonthly: 149,
-    audience: "Up to 2,000 candidates",
-    features: [
-      "Everything in Starter",
-      "Invigilator and reviewer roles",
-      "Audit trail for every administrative change",
-      "Priority email support",
-    ],
-    cta: { label: "Talk to sales", href: "/contact?topic=sales" },
+    id: "premium",
+    priceBdt: null,
+    features: ["fullPractice", "modelTests", "writtenFeedback", "analytics", "leaderboard"],
+    status: "comingSoon",
     highlighted: true,
-  },
-  {
-    id: "enterprise",
-    name: "Enterprise",
-    tagline: "For universities with compliance and integration needs.",
-    priceMonthly: null,
-    audience: "Unlimited candidates",
-    features: [
-      "Everything in Institution",
-      "Single sign-on and custom domains",
-      "Data residency options",
-      "Dedicated success manager and SLA",
-    ],
-    cta: { label: "Contact us", href: "/contact?topic=sales" },
   },
 ];

@@ -6,6 +6,7 @@ import { getPublicEnv } from "@/lib/env";
 import { errorCodeFromAuth } from "@/lib/errors";
 import { safeRedirectPath } from "@/lib/redirect";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { syncPreferencesAfterSignIn } from "@/features/preferences/server";
 import { logAuthEvent } from "./server/audit";
 import { forgotPasswordSchema, newPasswordFormSchema, signInSchema, signUpSchema } from "./schemas";
 
@@ -14,13 +15,14 @@ export async function signInWithPasswordAction(input: unknown): Promise<ActionRe
   if (!parsed.success) return invalid(parsed.error);
 
   const supabase = await createSupabaseServerClient();
-  const { error } = await supabase.auth.signInWithPassword({
+  const { data, error } = await supabase.auth.signInWithPassword({
     email: parsed.data.email,
     password: parsed.data.password,
   });
   if (error) return fail(errorCodeFromAuth(error));
 
   await logAuthEvent(supabase, "auth.sign_in", "password");
+  await syncPreferencesAfterSignIn(supabase, data.user.id);
   redirect(safeRedirectPath(parsed.data.next));
 }
 
@@ -43,8 +45,9 @@ export async function signUpAction(input: unknown): Promise<ActionResult<{ email
   if (error) return fail(errorCodeFromAuth(error));
 
   // When email confirmation is disabled Supabase returns a session immediately.
-  if (data.session) {
+  if (data.session && data.user) {
     await logAuthEvent(supabase, "auth.sign_in", "password");
+    await syncPreferencesAfterSignIn(supabase, data.user.id);
     redirect(next);
   }
 
@@ -96,7 +99,7 @@ export async function updatePasswordAction(input: unknown): Promise<ActionResult
   if (error) return fail(errorCodeFromAuth(error));
 
   await logAuthEvent(supabase, "auth.password_changed");
-  return ok(undefined, "Your password has been updated.");
+  return ok(undefined, "authForms.passwordUpdated");
 }
 
 export async function resendConfirmationAction(input: unknown): Promise<ActionResult> {
@@ -110,7 +113,7 @@ export async function resendConfirmationAction(input: unknown): Promise<ActionRe
     options: { emailRedirectTo: `${siteUrl}/onboarding` },
   });
   if (error && errorCodeFromAuth(error) === "rate_limited") return fail("rate_limited");
-  return ok(undefined, "If an unconfirmed account exists, we sent a new confirmation link.");
+  return ok(undefined, "authForms.confirmationResent");
 }
 
 export async function signOutAction(): Promise<void> {

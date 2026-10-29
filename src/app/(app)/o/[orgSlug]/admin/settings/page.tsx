@@ -1,32 +1,44 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { getTranslations } from "next-intl/server";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { PageHeader } from "@/components/ui/misc";
 import { OrganizationSettingsForm } from "@/features/organizations/components/organization-settings-form";
 import { requireOrgPermission } from "@/features/organizations/server/context";
 import { getOrganization } from "@/features/organizations/server/queries";
-import { formatDateTime } from "@/lib/utils";
+import { getFormatContext } from "@/features/preferences/server";
+import { formatDateTime } from "@/lib/i18n-format";
 
-export const metadata: Metadata = { title: "Organization settings" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("orgSettingsPage");
+  return { title: t("title") };
+}
 
 export default async function OrganizationSettingsPage({ params }: PageProps<"/o/[orgSlug]/admin/settings">) {
   const { orgSlug } = await params;
   const { viewer, membership } = await requireOrgPermission(orgSlug, "org.update");
-  const organization = await getOrganization(membership.organizationId);
+  const [t, fmt, organization] = await Promise.all([
+    getTranslations("orgSettingsPage"),
+    getFormatContext(viewer.profile.timezone),
+    getOrganization(membership.organizationId),
+  ]);
   if (!organization) notFound();
 
   return (
     <div className="space-y-6">
-      <PageHeader
-        title="Organization settings"
-        description="Details shown to your members and on invitations."
-      />
+      <PageHeader title={t("title")} description={t("description")} />
       <Card>
         <CardHeader>
-          <CardTitle>Profile</CardTitle>
+          <CardTitle>{t("profileTitle")}</CardTitle>
           <CardDescription>
-            Workspace address <span className="text-foreground font-mono">/o/{organization.slug}</span> ·
-            created {formatDateTime(organization.created_at, viewer.profile.timezone)}
+            {t.rich("profileDescription", {
+              slug: () => (
+                <span className="text-foreground font-mono" lang="en">
+                  {`/o/${organization.slug}`}
+                </span>
+              ),
+              date: formatDateTime(organization.created_at, fmt),
+            })}
           </CardDescription>
         </CardHeader>
         <CardContent>

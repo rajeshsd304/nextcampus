@@ -1,8 +1,24 @@
-<h2>Reset your NextCampus password</h2>
-<p>We received a request to reset your password.</p>
-<p>
-  <a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=recovery&next=/reset-password"
-    >Choose a new password</a
-  >
-</p>
-<p>If you did not request this, you can safely ignore this email. The link expires in one hour.</p>
+<div
+  style="font-family: &quot;Hind Siliguri&quot;, Inter, Arial, sans-serif; line-height: 1.7; color: #0b1430"
+>
+  <h2>NextCampus পাসওয়ার্ড রিসেট করুন</h2>
+  <p>আপনার পাসওয়ার্ড রিসেটের একটি অনুরোধ পেয়েছি। লিংকটির মেয়াদ এক ঘণ্টা।</p>
+  <h2 lang="en">Reset your NextCampus password</h2>
+  <p lang="en">We received a request to reset your password. The link expires in one hour.</p>
+  <p>
+    <a
+      href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=recovery&next=/reset-password"
+      style="
+        background: #4f46e5;
+        color: #fff;
+        padding: 12px 20px;
+        border-radius: 10px;
+        text-decoration: none;
+        font-weight: 600;
+      "
+      >নতুন পাসওয়ার্ড দিন / Choose a new password</a
+    >
+  </p>
+  <p>আপনি অনুরোধ না করে থাকলে এই ইমেইলটি উপেক্ষা করুন।</p>
+  <p lang="en">If you did not request this, you can safely ignore this email.</p>
+</div>

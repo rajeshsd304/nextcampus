@@ -1,27 +1,35 @@
-import { Check } from "lucide-react";
+import { Check, Clock3 } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
+import { Alert } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { PLANS } from "@/features/billing/plans";
 import { PageHero, Section } from "@/features/marketing/components/section";
+import { getFormatContext } from "@/features/preferences/server";
+import { formatBdt } from "@/lib/i18n-format";
 import { cn } from "@/lib/utils";
 
-export const metadata: Metadata = {
-  title: "Pricing",
-  description: "Simple plans for independent instructors, institutions and enterprises.",
-  alternates: { canonical: "/pricing" },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("pricing");
+  return { title: t("metaTitle"), description: t("metaDescription"), alternates: { canonical: "/pricing" } };
+}
 
-export default function PricingPage() {
+export default async function PricingPage() {
+  const [t, tPlans, fmt] = await Promise.all([
+    getTranslations("pricing"),
+    getTranslations("plans"),
+    getFormatContext(),
+  ]);
   return (
     <>
-      <PageHero
-        eyebrow="Pricing"
-        title="Plans that grow with your institution"
-        description="Start free. Upgrade when you need more candidates, oversight or support."
-      />
+      <PageHero eyebrow={t("eyebrow")} title={t("title")} description={t("description")} />
       <Section>
-        <div className="grid gap-6 lg:grid-cols-3">
+        <Alert tone="info" title={t("noticeTitle")} className="mx-auto mb-10 max-w-4xl">
+          {t("noticeBody")}
+        </Alert>
+        <div className="mx-auto grid max-w-4xl gap-6 md:grid-cols-2">
           {PLANS.map((plan) => (
             <article
               key={plan.id}
@@ -31,47 +39,67 @@ export default function PricingPage() {
                 plan.highlighted ? "border-primary shadow-xl shadow-indigo-900/10" : "border-border",
               )}
             >
-              {plan.highlighted ? (
-                <p className="bg-primary text-primary-foreground absolute -top-3 left-7 rounded-full px-3 py-1 text-xs font-semibold">
-                  Most popular
-                </p>
-              ) : null}
-              <h2 id={`plan-${plan.id}`} className="font-display text-xl font-semibold">
-                {plan.name}
-              </h2>
-              <p className="text-muted-foreground mt-2 text-sm">{plan.tagline}</p>
+              <div className="flex items-start justify-between gap-3">
+                <h2 id={`plan-${plan.id}`} className="font-display text-xl font-semibold">
+                  {tPlans(`${plan.id}.name`)}
+                </h2>
+                {plan.status === "comingSoon" ? (
+                  <Badge tone="warning">
+                    <Clock3 className="size-3.5" aria-hidden="true" />
+                    {t("comingSoon")}
+                  </Badge>
+                ) : (
+                  <Badge tone="success">{t("availableNow")}</Badge>
+                )}
+              </div>
+              <p className="text-muted-foreground mt-2 text-sm">{tPlans(`${plan.id}.tagline`)}</p>
               <p className="mt-6">
-                {plan.priceMonthly === null ? (
-                  <span className="font-display text-4xl font-semibold">Custom</span>
+                {plan.priceBdt === null ? (
+                  <span className="font-display text-3xl font-semibold">{tPlans("priceTba")}</span>
                 ) : (
                   <>
-                    <span className="font-display text-4xl font-semibold">${plan.priceMonthly}</span>
-                    <span className="text-muted-foreground"> / month</span>
+                    <span className="font-display text-4xl font-semibold">
+                      {formatBdt(plan.priceBdt, fmt)}
+                    </span>
+                    <span className="text-muted-foreground">{` ${tPlans("perMonth")}`}</span>
                   </>
                 )}
               </p>
-              <p className="text-muted-foreground mt-1 text-sm">{plan.audience}</p>
               <ul className="mt-6 flex-1 space-y-3 text-sm">
                 {plan.features.map((feature) => (
                   <li key={feature} className="flex gap-2.5">
                     <Check
-                      className="text-primary mt-0.5 size-4 shrink-0 dark:text-indigo-300"
+                      className="text-primary mt-1 size-4 shrink-0 dark:text-indigo-300"
                       aria-hidden="true"
                     />
-                    {feature}
+                    {tPlans(`features.${feature}`)}
                   </li>
                 ))}
               </ul>
-              <Button asChild className="mt-8" variant={plan.highlighted ? "primary" : "secondary"}>
-                <Link href={plan.cta.href}>{plan.cta.label}</Link>
-              </Button>
+              {plan.status === "available" ? (
+                <Button asChild className="mt-8">
+                  <Link href="/sign-up">{tPlans(`${plan.id}.cta`)}</Link>
+                </Button>
+              ) : (
+                <Button className="mt-8" variant="secondary" disabled aria-disabled="true">
+                  {tPlans(`${plan.id}.cta`)}
+                </Button>
+              )}
             </article>
           ))}
         </div>
-        <p className="text-muted-foreground mt-10 text-center text-sm">
-          Prices in USD, excluding applicable taxes. Paid plans are arranged with our team while self-serve
-          billing is being rolled out.
-        </p>
+        <div className="text-muted-foreground mx-auto mt-10 max-w-4xl space-y-2 text-center text-sm">
+          <p>{t("paymentNote")}</p>
+          <p>
+            {t("institutionsNote")}{" "}
+            <Link
+              href="/contact?topic=sales"
+              className="text-primary font-semibold hover:underline dark:text-indigo-300"
+            >
+              {t("contactUs")}
+            </Link>
+          </p>
+        </div>
       </Section>
     </>
   );

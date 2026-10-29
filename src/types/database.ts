@@ -44,6 +44,80 @@ export type Database = {
         Update: never;
         Relationships: [];
       };
+      exam_target_subjects: {
+        Row: { exam_target_id: string; subject_id: string };
+        Insert: never;
+        Update: never;
+        Relationships: [
+          {
+            foreignKeyName: "exam_target_subjects_exam_target_id_fkey";
+            columns: ["exam_target_id"];
+            isOneToOne: false;
+            referencedRelation: "exam_targets";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "exam_target_subjects_subject_id_fkey";
+            columns: ["subject_id"];
+            isOneToOne: false;
+            referencedRelation: "subjects";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      exam_targets: {
+        Row: {
+          created_at: string;
+          description_bn: string | null;
+          description_en: string | null;
+          id: string;
+          is_active: boolean;
+          name_bn: string;
+          name_en: string;
+          negative_marking: number;
+          slug: string;
+          sort_order: number;
+          typical_format_bn: string | null;
+          typical_format_en: string | null;
+          university_id: string;
+          updated_at: string;
+        };
+        Insert: {
+          description_bn?: string | null;
+          description_en?: string | null;
+          is_active?: boolean;
+          name_bn: string;
+          name_en: string;
+          negative_marking?: number;
+          slug: string;
+          sort_order?: number;
+          typical_format_bn?: string | null;
+          typical_format_en?: string | null;
+          university_id: string;
+        };
+        Update: {
+          description_bn?: string | null;
+          description_en?: string | null;
+          is_active?: boolean;
+          name_bn?: string;
+          name_en?: string;
+          negative_marking?: number;
+          slug?: string;
+          sort_order?: number;
+          typical_format_bn?: string | null;
+          typical_format_en?: string | null;
+          university_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "exam_targets_university_id_fkey";
+            columns: ["university_id"];
+            isOneToOne: false;
+            referencedRelation: "universities";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       invitations: {
         Row: {
           created_at: string;
@@ -84,7 +158,9 @@ export type Database = {
           id: string;
           kind: Database["public"]["Enums"]["notification_kind"];
           organization_id: string | null;
+          params: Json;
           read_at: string | null;
+          template: string | null;
           title: string;
           user_id: string;
         };
@@ -134,6 +210,7 @@ export type Database = {
           created_at: string;
           created_by: string | null;
           id: string;
+          is_system: boolean;
           name: string;
           slug: string;
           status: Database["public"]["Enums"]["organization_status"];
@@ -173,6 +250,8 @@ export type Database = {
           locale: string;
           marketing_opt_in: boolean;
           onboarded_at: string | null;
+          preferred_locale: string | null;
+          preferred_numerals: string | null;
           timezone: string;
           updated_at: string;
         };
@@ -183,6 +262,8 @@ export type Database = {
           full_name?: string | null;
           locale?: string;
           marketing_opt_in?: boolean;
+          preferred_locale?: string | null;
+          preferred_numerals?: string | null;
           timezone?: string;
         };
         Relationships: [];
@@ -191,6 +272,91 @@ export type Database = {
         Row: { permission_key: string; role: Database["public"]["Enums"]["org_role"] };
         Insert: never;
         Update: never;
+        Relationships: [];
+      };
+      subjects: {
+        Row: {
+          created_at: string;
+          id: string;
+          is_active: boolean;
+          name_bn: string;
+          name_en: string;
+          slug: string;
+          sort_order: number;
+          updated_at: string;
+        };
+        Insert: { is_active?: boolean; name_bn: string; name_en: string; slug: string; sort_order?: number };
+        Update: {
+          is_active?: boolean;
+          name_bn?: string;
+          name_en?: string;
+          slug?: string;
+          sort_order?: number;
+        };
+        Relationships: [];
+      };
+      universities: {
+        Row: {
+          category_key: string;
+          created_at: string;
+          id: string;
+          is_active: boolean;
+          name_bn: string;
+          name_en: string;
+          short_code: string;
+          slug: string;
+          sort_order: number;
+          updated_at: string;
+          website: string | null;
+        };
+        Insert: {
+          category_key: string;
+          is_active?: boolean;
+          name_bn: string;
+          name_en: string;
+          short_code: string;
+          slug: string;
+          sort_order?: number;
+          website?: string | null;
+        };
+        Update: {
+          category_key?: string;
+          is_active?: boolean;
+          name_bn?: string;
+          name_en?: string;
+          short_code?: string;
+          slug?: string;
+          sort_order?: number;
+          website?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "universities_category_key_fkey";
+            columns: ["category_key"];
+            isOneToOne: false;
+            referencedRelation: "university_categories";
+            referencedColumns: ["key"];
+          },
+        ];
+      };
+      university_categories: {
+        Row: {
+          created_at: string;
+          is_active: boolean;
+          key: string;
+          name_bn: string;
+          name_en: string;
+          sort_order: number;
+          updated_at: string;
+        };
+        Insert: { is_active?: boolean; key: string; name_bn: string; name_en: string; sort_order?: number };
+        Update: {
+          is_active?: boolean;
+          key?: string;
+          name_bn?: string;
+          name_en?: string;
+          sort_order?: number;
+        };
         Relationships: [];
       };
     };
@@ -241,6 +407,10 @@ export type Database = {
           status: Database["public"]["Enums"]["invitation_status"];
         }[];
       };
+      join_public_organization: {
+        Args: never;
+        Returns: { joined: boolean; organization_slug: string }[];
+      };
       list_my_invitations: {
         Args: never;
         Returns: {
@@ -254,9 +424,17 @@ export type Database = {
         }[];
       };
       log_auth_event: { Args: { p_event: string; p_method?: string }; Returns: undefined };
+      move_catalog_item: {
+        Args: { p_direction: string; p_entity: string; p_id: string };
+        Returns: undefined;
+      };
       mark_notifications_read: { Args: { p_notification_ids?: string[] }; Returns: number };
       remove_member: { Args: { p_organization_id: string; p_user_id: string }; Returns: undefined };
       revoke_invitation: { Args: { p_invitation_id: string }; Returns: undefined };
+      set_exam_target_subjects: {
+        Args: { p_exam_target_id: string; p_subject_ids: string[] };
+        Returns: undefined;
+      };
       set_organization_status: {
         Args: {
           p_organization_id: string;

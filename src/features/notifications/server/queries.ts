@@ -4,10 +4,10 @@ import type { Tables } from "@/types/database";
 
 export type NotificationItem = Pick<
   Tables<"notifications">,
-  "id" | "kind" | "title" | "body" | "action_url" | "read_at" | "created_at"
+  "id" | "kind" | "title" | "body" | "action_url" | "read_at" | "created_at" | "template" | "params"
 >;
 
-const COLUMNS = "id, kind, title, body, action_url, read_at, created_at";
+const COLUMNS = "id, kind, title, body, action_url, read_at, created_at, template, params";
 
 export async function getNotificationSummary(
   limit = 6,

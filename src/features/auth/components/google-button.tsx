@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server";
 import { SubmitButton } from "@/components/ui/submit-button";
 import { signInWithGoogleAction } from "../actions";
 
@@ -24,13 +25,14 @@ function GoogleIcon() {
   );
 }
 
-export function GoogleSignInButton({ next }: { next?: string | undefined }) {
+export async function GoogleSignInButton({ next }: { next?: string | undefined }) {
+  const t = await getTranslations("authForms");
   return (
     <form action={signInWithGoogleAction}>
       {next ? <input type="hidden" name="next" value={next} /> : null}
-      <SubmitButton variant="secondary" size="lg" className="w-full" pendingLabel="Redirecting to Google">
+      <SubmitButton variant="secondary" size="lg" className="w-full" pendingLabel={t("redirectingToGoogle")}>
         <GoogleIcon />
-        Continue with Google
+        {t("continueWithGoogle")}
       </SubmitButton>
     </form>
   );

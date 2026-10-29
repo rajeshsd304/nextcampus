@@ -41,5 +41,5 @@ export async function submitContactAction(input: unknown): Promise<ActionResult>
     if (!result.ok) console.error(`[contact] notification email failed: ${result.reason}`);
   }
 
-  return ok(undefined, "Thanks — your message has been received. We usually reply within one business day.");
+  return ok(undefined, "contactForm.sent");
 }

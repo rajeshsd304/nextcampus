@@ -1,43 +1,146 @@
-import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
+import {
+  expectNoHorizontalOverflow,
+  expectNoSeriousA11yViolations,
+  messagePattern,
+  messages,
+  setLocale,
+  undersizedTapTargets,
+  type TestLocale,
+} from "./helpers";
 
-const PUBLIC_PAGES = [
-  { path: "/", heading: /secure, trusted/i },
-  { path: "/features", heading: /everything an institution needs/i },
-  { path: "/exams", heading: /assessments for every kind of learning/i },
-  { path: "/solutions", heading: /built for the way your institution assesses/i },
-  { path: "/pricing", heading: /plans that grow/i },
-  { path: "/faq", heading: /frequently asked questions/i },
-  { path: "/contact", heading: /let's talk/i },
-  { path: "/legal/privacy", heading: /privacy policy/i },
-  { path: "/legal/terms", heading: /terms of service/i },
-  { path: "/legal/acceptable-use", heading: /acceptable use policy/i },
-  { path: "/sign-in", heading: /welcome back/i },
-  { path: "/sign-up", heading: /create your account/i },
+type Messages = (typeof messages)["en"];
+
+/** Every public page with the h1 it must render, per locale (read from the message files). */
+const PUBLIC_PAGES: { path: string; heading: (m: Messages) => string }[] = [
+  { path: "/", heading: (m) => m.home.hero.title },
+  { path: "/exams", heading: (m) => m.catalog.title },
+  { path: "/features", heading: (m) => m.features.title },
+  { path: "/solutions", heading: (m) => m.solutions.title },
+  { path: "/pricing", heading: (m) => m.pricing.title },
+  { path: "/faq", heading: (m) => m.faq.title },
+  { path: "/contact", heading: (m) => m.contact.title },
+  { path: "/legal/privacy", heading: (m) => m.legal.privacy.title },
+  { path: "/legal/terms", heading: (m) => m.legal.terms.title },
+  { path: "/legal/acceptable-use", heading: (m) => m.legal.acceptableUse.title },
+  { path: "/sign-in", heading: (m) => m.authPages.signIn.title },
+  { path: "/sign-up", heading: (m) => m.authPages.signUp.title },
 ];
 
-for (const { path, heading } of PUBLIC_PAGES) {
-  test(`${path} renders, has a single h1 and no serious a11y violations`, async ({ page }) => {
-    // Reduced motion disables entrance animations so contrast is measured on final colors.
-    await page.emulateMedia({ reducedMotion: "reduce" });
-    const response = await page.goto(path);
-    expect(response?.status()).toBe(200);
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText(heading);
-    await expect(page.locator("h1")).toHaveCount(1);
+const REDESIGNED = ["/", "/exams", "/pricing", "/faq", "/features", "/contact"];
+const LOCALES: TestLocale[] = ["bn", "en"];
 
-    const results = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa"]).analyze();
-    const serious = results.violations.filter((v) => v.impact === "serious" || v.impact === "critical");
-    expect(serious.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(" ")).join(", ")}`)).toEqual([]);
+test.beforeEach(async ({ page }) => {
+  // Reduced motion disables entrance animations so contrast is measured on final colors.
+  await page.emulateMedia({ reducedMotion: "reduce" });
+});
 
-    // No horizontal overflow at any viewport.
-    const overflow = await page.evaluate(
-      () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
-    );
-    expect(overflow).toBeLessThanOrEqual(1);
-  });
+for (const locale of LOCALES) {
+  for (const { path, heading } of PUBLIC_PAGES) {
+    test(`[${locale}] ${path} renders one h1, correct lang and no serious a11y violations`, async ({
+      page,
+      context,
+    }) => {
+      await setLocale(context, locale);
+      const response = await page.goto(path);
+      expect(response?.status()).toBe(200);
+      await expect(page.locator("html")).toHaveAttribute("lang", locale);
+      await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+        messagePattern(heading(messages[locale])),
+      );
+      await expect(page.locator("h1")).toHaveCount(1);
+      await expectNoSeriousA11yViolations(page);
+      await expectNoHorizontalOverflow(page);
+    });
+  }
+
+  for (const path of REDESIGNED) {
+    test(`[${locale}] ${path} meets contrast requirements in dark mode`, async ({ page, context }) => {
+      await setLocale(context, locale);
+      await page.emulateMedia({ colorScheme: "dark", reducedMotion: "reduce" });
+      await page.goto(path);
+      await expect(page.locator("html")).toHaveClass(/dark/);
+      await expectNoSeriousA11yViolations(page);
+    });
+  }
 }
 
-test("dark mode toggles and persists", async ({ page }) => {
+test.describe("responsive layouts", () => {
+  for (const width of [360, 390, 768, 1280]) {
+    test(`no horizontal overflow and 44px tap targets at ${width}px`, async ({ page, context }) => {
+      await setLocale(context, "bn");
+      await page.setViewportSize({ width, height: 900 });
+      for (const path of [...REDESIGNED, "/sign-in", "/sign-up"]) {
+        await page.goto(path);
+        await expectNoHorizontalOverflow(page);
+        if (width < 1280)
+          expect({ path, undersized: await undersizedTapTargets(page) }).toEqual({ path, undersized: [] });
+      }
+    });
+  }
+});
+
+test.describe("language switching", () => {
+  test("defaults to Bangla, switches to English and back, and persists the choice", async ({
+    page,
+    isMobile,
+  }) => {
+    await page.goto("/pricing");
+    await expect(page.locator("html")).toHaveAttribute("lang", "bn");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText(messages.bn.pricing.title);
+
+    const switcher = isMobile ? page.locator("footer") : page.locator("header");
+    await switcher
+      .getByRole("button", {
+        name: messagePattern(messages.bn.locale.switchTo.replace("{language}", "English")),
+      })
+      .click();
+    await expect(page.locator("html")).toHaveAttribute("lang", "en");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText(messages.en.pricing.title);
+
+    await page.goto("/faq");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText(messages.en.faq.title);
+    const cookies = await page.context().cookies();
+    expect(cookies.find((c) => c.name === "NEXT_LOCALE")?.value).toBe("en");
+
+    await page
+      .locator("footer")
+      .getByRole("button", {
+        name: messagePattern(messages.en.locale.switchTo.replace("{language}", "বাংলা")),
+      })
+      .click();
+    await expect(page.locator("html")).toHaveAttribute("lang", "bn");
+  });
+
+  test("the switcher marks the active language and has an accessible group label", async ({ page }) => {
+    await page.goto("/");
+    const group = page.locator("footer").getByRole("group", { name: messages.bn.locale.label });
+    await expect(group.getByRole("button", { pressed: true })).toHaveText("বাংলা");
+    await expect(group.getByRole("button", { pressed: false })).toHaveText("English");
+  });
+
+  test("uses a Bengali font with Bengali-safe line height", async ({ page }) => {
+    await page.goto("/");
+    const metrics = await page.locator("h1").evaluate((el) => {
+      const style = getComputedStyle(el);
+      return {
+        family: style.fontFamily,
+        lineHeight: parseFloat(style.lineHeight) / parseFloat(style.fontSize),
+      };
+    });
+    expect(metrics.family).toMatch(/Hind Siliguri|bengali/i);
+    expect(metrics.lineHeight).toBeGreaterThanOrEqual(1.25);
+  });
+
+  test("shows Bangla digits and ৳ prices", async ({ page }) => {
+    await page.goto("/pricing");
+    // CLDR bn-BD places the symbol after the amount ("০৳"); accept either order.
+    await expect(page.getByText(/^\s*(৳\s?০|০\s?৳)\s*$/).first()).toBeVisible();
+  });
+});
+
+test("dark mode toggles and persists", async ({ page, context }) => {
+  await setLocale(context, "en");
   await page.emulateMedia({ colorScheme: "light" });
   await page.goto("/");
   const toggle = page.getByRole("button", { name: /color theme/i });
@@ -51,24 +154,28 @@ test("dark mode toggles and persists", async ({ page }) => {
 test("skip link moves focus to main content", async ({ page }) => {
   await page.goto("/features");
   await page.keyboard.press("Tab");
-  const skip = page.getByRole("link", { name: "Skip to main content" });
+  const skip = page.getByRole("link", { name: messages.bn.common.skipToContent });
   await expect(skip).toBeFocused();
   await skip.press("Enter");
   await expect(page).toHaveURL(/#main$/);
 });
 
-test("navigation works on desktop and mobile", async ({ page, isMobile }) => {
+test("navigation works on desktop and mobile", async ({ page, isMobile, context }) => {
+  await setLocale(context, "en");
   await page.goto("/");
   if (isMobile) {
     await page.getByRole("button", { name: "Open menu" }).click();
     const dialog = page.getByRole("dialog", { name: "Menu" });
     await expect(dialog).toBeVisible();
-    await dialog.getByRole("link", { name: "Pricing" }).click();
+    await dialog.getByRole("link", { name: messages.en.nav.pricing }).click();
   } else {
-    await page.getByRole("navigation", { name: "Main" }).getByRole("link", { name: "Pricing" }).click();
+    await page
+      .getByRole("navigation", { name: "Main" })
+      .getByRole("link", { name: messages.en.nav.pricing })
+      .click();
   }
   await expect(page).toHaveURL(/\/pricing$/);
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText(/plans that grow/i);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(messages.en.pricing.title);
 });
 
 test("SEO endpoints are served", async ({ request }) => {
@@ -80,35 +187,60 @@ test("SEO endpoints are served", async ({ request }) => {
 
   const sitemap = await request.get("/sitemap.xml");
   expect(sitemap.ok()).toBe(true);
-  expect(await sitemap.text()).toContain("/pricing</loc>");
+  const sitemapText = await sitemap.text();
+  expect(sitemapText).toContain("/pricing</loc>");
+  expect(sitemapText).toContain("/exams</loc>");
 
   const og = await request.get("/opengraph-image");
   expect(og.ok()).toBe(true);
   expect(og.headers()["content-type"]).toContain("image/png");
 });
 
-test("pages expose Open Graph metadata", async ({ page }) => {
+test("pages expose localized Open Graph metadata", async ({ page, context }) => {
+  await setLocale(context, "en");
   await page.goto("/pricing");
-  await expect(page).toHaveTitle(/Pricing · NextCampus/);
+  await expect(page).toHaveTitle(`${messages.en.pricing.metaTitle} · NextCampus`);
   await expect(page.locator('meta[property="og:image"]')).toHaveAttribute("content", /opengraph-image/);
+  await expect(page.locator('meta[property="og:locale"]')).toHaveAttribute("content", "en_GB");
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", /\/pricing$/);
 });
 
-test("contact form validates on the client", async ({ page }) => {
-  await page.goto("/contact?topic=support");
-  await expect(page.getByLabel("Topic")).toHaveValue("support");
-  await page.getByRole("button", { name: "Send message" }).click();
-  await expect(page.getByText("Enter your name.")).toBeVisible();
-  await expect(page.getByLabel("Name")).toHaveAttribute("aria-invalid", "true");
+test("pricing is honest: no checkout, Premium marked coming soon", async ({ page, context }) => {
+  await setLocale(context, "en");
+  await page.goto("/pricing");
+  await expect(page.getByText(messages.en.pricing.noticeTitle)).toBeVisible();
+  await expect(page.getByRole("button", { name: messages.en.plans.premium.cta })).toBeDisabled();
+  await expect(page.getByText(messages.en.plans.priceTba).first()).toBeVisible();
 });
 
-for (const path of ["/", "/pricing", "/sign-in", "/contact"]) {
-  test(`${path} meets contrast requirements in dark mode`, async ({ page }) => {
-    await page.emulateMedia({ colorScheme: "dark", reducedMotion: "reduce" });
-    await page.goto(path);
-    await expect(page.locator("html")).toHaveClass(/dark/);
-    const results = await new AxeBuilder({ page }).withTags(["wcag2aa"]).analyze();
-    const serious = results.violations.filter((v) => v.impact === "serious" || v.impact === "critical");
-    expect(serious.map((v) => `${v.id}: ${v.nodes.map((n) => n.target.join(" ")).join(", ")}`)).toEqual([]);
-  });
-}
+test("contact form validates on the client in both languages", async ({ page, context }) => {
+  await page.goto("/contact?topic=support");
+  await page.getByRole("button", { name: messages.bn.contactForm.submit }).click();
+  await expect(page.getByText(messages.bn.validation.nameRequired)).toBeVisible();
+
+  await setLocale(context, "en");
+  await page.goto("/contact?topic=support");
+  await expect(page.getByLabel(messages.en.contactForm.topic)).toHaveValue("support");
+  await page.getByRole("button", { name: messages.en.contactForm.submit }).click();
+  await expect(page.getByText(messages.en.validation.nameRequired)).toBeVisible();
+  await expect(page.getByLabel(messages.en.contactForm.name)).toHaveAttribute("aria-invalid", "true");
+});
+
+test("the catalog shows an accessible error state when the database is unreachable", async ({
+  page,
+  context,
+}) => {
+  test.skip(Boolean(process.env.E2E_SUPABASE), "Only meaningful without a database");
+  await setLocale(context, "en");
+  const response = await page.goto("/exams");
+  expect(response?.status()).toBe(200);
+  await expect(page.getByRole("heading", { name: messages.en.catalog.unavailableTitle })).toBeVisible();
+  await expect(page.getByText(messages.en.catalog.comingSoonTitle)).toBeVisible();
+});
+
+test("the focused skip link is a 44px target", async ({ page }) => {
+  await page.goto("/");
+  await page.keyboard.press("Tab");
+  const box = await page.getByRole("link", { name: messages.bn.common.skipToContent }).boundingBox();
+  expect(box?.height ?? 0).toBeGreaterThanOrEqual(43.5);
+});

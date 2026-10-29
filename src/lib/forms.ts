@@ -1,7 +1,10 @@
 import type { FieldValues, Path, UseFormReturn } from "react-hook-form";
 import type { ActionResult } from "./action-result";
 
-/** Copies server-side validation/authorization errors onto a React Hook Form instance. */
+/**
+ * Copies server-side validation/authorization errors onto a React Hook Form
+ * instance. Messages are translation keys; FormField / FormError translate them.
+ */
 export function applyActionErrors<T extends FieldValues>(
   form: UseFormReturn<T>,
   result: ActionResult<unknown>,
@@ -19,6 +22,6 @@ export function applyActionErrors<T extends FieldValues>(
   }
   form.setError("root.server", {
     type: "server",
-    message: fieldErrorApplied ? "Please correct the highlighted fields." : result.error.message,
+    message: fieldErrorApplied ? "common.correctHighlighted" : `errors.${result.error.code}`,
   });
 }

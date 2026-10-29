@@ -1,22 +1,15 @@
 import { z } from "zod";
 import { emailSchema } from "@/features/auth/schemas";
 
+/** Labels: messages `contactForm.topics.<topic>`. */
 export const CONTACT_TOPICS = ["sales", "support", "partnership", "security", "other"] as const;
 
-export const CONTACT_TOPIC_LABELS: Record<(typeof CONTACT_TOPICS)[number], string> = {
-  sales: "Sales and pricing",
-  support: "Product support",
-  partnership: "Partnerships",
-  security: "Security or privacy",
-  other: "Something else",
-};
-
 export const contactSchema = z.object({
-  name: z.string().trim().min(1, "Enter your name.").max(120),
+  name: z.string().trim().min(1, "validation.nameRequired").max(120, "validation.nameTooLong"),
   email: emailSchema,
-  organization: z.string().trim().max(160),
+  organization: z.string().trim().max(160, "validation.textTooLong"),
   topic: z.enum(CONTACT_TOPICS),
-  message: z.string().trim().min(10, "Tell us a little more (at least 10 characters).").max(4000),
+  message: z.string().trim().min(10, "validation.messageMin").max(4000, "validation.textTooLong"),
   // Honeypot: real users never fill this hidden field.
   website: z.string().max(0).optional(),
 });

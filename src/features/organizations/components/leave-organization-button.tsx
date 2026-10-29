@@ -1,9 +1,11 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { useMessageText } from "@/i18n/use-message-text";
 import { leaveOrganizationAction } from "../actions";
 
 export function LeaveOrganizationButton({
@@ -13,6 +15,8 @@ export function LeaveOrganizationButton({
   organizationId: string;
   organizationName: string;
 }) {
+  const t = useTranslations("orgForms.members");
+  const text = useMessageText();
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -25,19 +29,19 @@ export function LeaveOrganizationButton({
         onOpenChange={setOpen}
         trigger={
           <Button size="sm" variant="ghost" className="text-danger" disabled={pending}>
-            Leave
+            {t("leave")}
           </Button>
         }
-        title={`Leave ${organizationName}?`}
-        description="You will lose access to this organization immediately. An administrator can invite you again."
-        confirmLabel="Leave organization"
+        title={t("leaveNamedTitle", { name: organizationName })}
+        description={t("leaveNamedDescription")}
+        confirmLabel={t("leaveConfirm")}
         onConfirm={() => {
           setOpen(false);
           setError(null);
           startTransition(async () => {
             const result = await leaveOrganizationAction({ organizationId });
             if (result.ok) router.refresh();
-            else setError(result.error.message);
+            else setError(text(`errors.${result.error.code}`) ?? null);
           });
         }}
       />

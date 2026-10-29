@@ -2,55 +2,49 @@
 
 import { Menu } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useTranslations } from "next-intl";
+import { useState, type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { siteConfig } from "@/lib/site";
 import { NavLink } from "./nav-link";
 
-export function MarketingMobileNav() {
+export function MarketingMobileNav({ localeSwitcher }: { localeSwitcher: ReactNode }) {
+  const t = useTranslations("nav");
   const [open, setOpen] = useState(false);
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button variant="ghost" size="icon" className="lg:hidden" aria-label="Open menu">
+        <Button variant="ghost" size="icon" className="lg:hidden" aria-label={t("openMenu")}>
           <Menu aria-hidden="true" />
         </Button>
       </SheetTrigger>
-      <SheetContent title="Menu" side="right">
-        <nav aria-label="Mobile">
+      <SheetContent title={t("menu")} side="right">
+        <nav aria-label={t("mobileLabel")}>
           <ul className="space-y-1">
             {siteConfig.marketingNav.map((item) => (
               <li key={item.href}>
                 <NavLink
                   href={item.href}
                   onClick={() => setOpen(false)}
-                  className="hover:bg-surface-muted aria-[current=page]:bg-accent aria-[current=page]:text-accent-foreground block rounded-lg px-3 py-2.5 font-medium"
+                  className="hover:bg-surface-muted aria-[current=page]:bg-accent aria-[current=page]:text-accent-foreground flex min-h-11 items-center rounded-lg px-3 font-medium"
                 >
-                  {item.label}
+                  {t(item.key)}
                 </NavLink>
               </li>
             ))}
-            <li>
-              <NavLink
-                href="/contact"
-                onClick={() => setOpen(false)}
-                className="hover:bg-surface-muted block rounded-lg px-3 py-2.5 font-medium"
-              >
-                Contact
-              </NavLink>
-            </li>
           </ul>
         </nav>
+        <div className="border-border border-t pt-4">{localeSwitcher}</div>
         <div className="mt-auto grid gap-2">
           <Button asChild variant="secondary">
             <Link href="/sign-in" onClick={() => setOpen(false)}>
-              Sign in
+              {t("signIn")}
             </Link>
           </Button>
           <Button asChild>
             <Link href="/sign-up" onClick={() => setOpen(false)}>
-              Get started
+              {t("getStarted")}
             </Link>
           </Button>
         </div>

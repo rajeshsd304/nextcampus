@@ -9,19 +9,39 @@ export const ORG_ROLES = [
   "student",
 ] as const satisfies readonly OrgRole[];
 
-export const ROLE_LABELS: Record<OrgRole, string> = {
-  org_admin: "Organization Admin",
-  instructor: "Instructor",
-  invigilator: "Invigilator / Reviewer",
-  student: "Student",
+/**
+ * Roles as presented in the UI. The database roles and permission matrix are
+ * unchanged; instructors and invigilators/reviewers share one label.
+ * Labels and descriptions live in messages/<locale>.json under `roles.<key>`.
+ */
+export const DISPLAY_ROLES = ["student", "grader", "orgAdmin", "platformAdmin"] as const;
+export type DisplayRole = (typeof DISPLAY_ROLES)[number];
+
+export const ORG_ROLE_DISPLAY: Record<OrgRole, Exclude<DisplayRole, "platformAdmin">> = {
+  student: "student",
+  instructor: "grader",
+  invigilator: "grader",
+  org_admin: "orgAdmin",
 };
 
-export const ROLE_DESCRIPTIONS: Record<OrgRole, string> = {
-  org_admin: "Manages the organization, members, invitations and audit trail.",
-  instructor: "Authors and runs assessments for their cohorts.",
-  invigilator: "Monitors sessions and reviews flagged attempts.",
-  student: "Takes assessments and tracks their results.",
-};
+/** Roles an organization admin can assign, in UI order. */
+export const ASSIGNABLE_DISPLAY_ROLES = ["student", "grader", "orgAdmin"] as const;
+export type AssignableDisplayRole = (typeof ASSIGNABLE_DISPLAY_ROLES)[number];
+
+/**
+ * Maps a UI role choice to a database role. Choosing "Instructor/Grader" keeps
+ * an existing instructor or invigilator as-is and otherwise assigns instructor.
+ */
+export function toOrgRole(choice: AssignableDisplayRole, current?: OrgRole): OrgRole {
+  switch (choice) {
+    case "student":
+      return "student";
+    case "orgAdmin":
+      return "org_admin";
+    case "grader":
+      return current === "instructor" || current === "invigilator" ? current : "instructor";
+  }
+}
 
 /** Dashboard areas inside an organization workspace: `/o/[slug]/<area>`. */
 export type DashboardArea = "admin" | "instructor" | "review" | "student";

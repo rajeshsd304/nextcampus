@@ -2,6 +2,7 @@
 
 import { Bell, Building2, LogOut, ShieldCheck, User } from "lucide-react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { useTransition } from "react";
 import { Avatar } from "@/components/ui/avatar";
 import {
@@ -25,10 +26,14 @@ export function UserMenu({
   avatarUrl: string | null;
   isSuperAdmin: boolean;
 }) {
+  const t = useTranslations("shell.userMenu");
   const [pending, startTransition] = useTransition();
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="ml-1 rounded-full" aria-label={`Account menu for ${name}`}>
+      <DropdownMenuTrigger
+        className="ml-0.5 flex size-11 items-center justify-center rounded-full"
+        aria-label={t("label", { name })}
+      >
         <Avatar name={name} src={avatarUrl} size="sm" />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-64">
@@ -40,33 +45,33 @@ export function UserMenu({
         <DropdownMenuItem asChild>
           <Link href="/settings">
             <User aria-hidden="true" />
-            Account settings
+            {t("settings")}
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
           <Link href="/settings/organizations">
             <Building2 aria-hidden="true" />
-            Organizations
+            {t("organizations")}
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
           <Link href="/notifications">
             <Bell aria-hidden="true" />
-            Notifications
+            {t("notifications")}
           </Link>
         </DropdownMenuItem>
         {isSuperAdmin ? (
           <DropdownMenuItem asChild>
             <Link href="/platform">
               <ShieldCheck aria-hidden="true" />
-              Platform console
+              {t("platform")}
             </Link>
           </DropdownMenuItem>
         ) : null}
         <DropdownMenuSeparator />
         <DropdownMenuItem disabled={pending} onSelect={() => startTransition(() => signOutAction())}>
           <LogOut aria-hidden="true" />
-          {pending ? "Signing out…" : "Sign out"}
+          {pending ? t("signingOut") : t("signOut")}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

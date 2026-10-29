@@ -57,3 +57,29 @@ describe("proxy route protection", () => {
     "/organizations",
   ])("leaves %s public", (path) => expect(isProtectedPath(path)).toBe(false));
 });
+
+describe("simplified role labels (UI only)", () => {
+  it("maps instructors and invigilators to one Instructor/Grader label", async () => {
+    const { ORG_ROLE_DISPLAY, toOrgRole } = await import("@/features/access/roles");
+    expect(ORG_ROLE_DISPLAY).toEqual({
+      student: "student",
+      instructor: "grader",
+      invigilator: "grader",
+      org_admin: "orgAdmin",
+    });
+    expect(toOrgRole("grader")).toBe("instructor");
+    expect(toOrgRole("grader", "invigilator")).toBe("invigilator");
+    expect(toOrgRole("grader", "instructor")).toBe("instructor");
+    expect(toOrgRole("student", "invigilator")).toBe("student");
+    expect(toOrgRole("orgAdmin")).toBe("org_admin");
+  });
+
+  it("has a translated label and description for every display role", async () => {
+    const { DISPLAY_ROLES } = await import("@/features/access/roles");
+    const en = (await import("../../messages/en.json")).default;
+    for (const role of DISPLAY_ROLES) {
+      expect(en.roles[role].label.length).toBeGreaterThan(0);
+      expect(en.roles[role].description.length).toBeGreaterThan(0);
+    }
+  });
+});

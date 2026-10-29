@@ -2,7 +2,8 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { ROLE_HOME_AREA, ROLE_LABELS } from "@/features/access/roles";
+import { getTranslations } from "next-intl/server";
+import { ORG_ROLE_DISPLAY, ROLE_HOME_AREA } from "@/features/access/roles";
 import { getViewer, viewerDisplayName } from "@/features/auth/server/session";
 import { fail, invalid, ok, type ActionResult } from "@/lib/action-result";
 import { getEmailProvider } from "@/lib/email";
@@ -32,9 +33,7 @@ export async function createInvitationAction(input: unknown): Promise<ActionResu
     const code = errorCodeFromDatabase(error);
     return code === "already_member" || code === "invalid_email"
       ? fail(code, {
-          email: [
-            code === "already_member" ? "This person is already a member." : "Enter a valid email address.",
-          ],
+          email: [code === "already_member" ? "errors.already_member" : "validation.emailInvalid"],
         })
       : fail(code);
   }
@@ -43,15 +42,26 @@ export async function createInvitationAction(input: unknown): Promise<ActionResu
 
   const membership = viewer.memberships.find((m) => m.organizationId === parsed.data.organizationId);
   const inviteUrl = `${getPublicEnv().siteUrl}/invite/${invitation.invitation_token}`;
+  // The email is written in the inviter's current language.
+  const [tEmail, tRoles] = await Promise.all([getTranslations("email.invitation"), getTranslations("roles")]);
   const sendResult = await getEmailProvider().send(
-    invitationEmail({
-      to: parsed.data.email,
-      organizationName: membership?.organization.name ?? "a NextCampus organization",
-      roleLabel: ROLE_LABELS[parsed.data.role],
-      inviterName: viewerDisplayName(viewer),
-      acceptUrl: inviteUrl,
-      expiresAt: invitation.invitation_expires_at,
-    }),
+    invitationEmail(
+      {
+        to: parsed.data.email,
+        organizationName: membership?.organization.name ?? tEmail("fallbackOrganization"),
+        roleLabel: tRoles(`${ORG_ROLE_DISPLAY[parsed.data.role]}.label`),
+        inviterName: viewerDisplayName(viewer),
+        acceptUrl: inviteUrl,
+        expiresAt: invitation.invitation_expires_at,
+      },
+      {
+        subject: (values) => tEmail("subject", values),
+        body: (values) => tEmail("body", values),
+        button: tEmail("button"),
+        footer: (values) => tEmail("footer", values),
+        tagline: tEmail("tagline"),
+      },
+    ),
   );
   if (!sendResult.ok) console.error(`[invitations] email delivery failed: ${sendResult.reason}`);
 
@@ -63,9 +73,7 @@ export async function createInvitationAction(input: unknown): Promise<ActionResu
       emailSent: sendResult.ok,
       expiresAt: invitation.invitation_expires_at,
     },
-    sendResult.ok
-      ? `Invitation sent to ${parsed.data.email}.`
-      : "Invitation created, but the email could not be sent. Share the link below.",
+    sendResult.ok ? "invitationForms.sent" : "invitationForms.emailFailed",
   );
 }
 
@@ -78,7 +86,7 @@ export async function revokeInvitationAction(input: unknown): Promise<ActionResu
   if (error) return fail(errorCodeFromDatabase(error));
 
   revalidatePath("/", "layout");
-  return ok(undefined, "Invitation revoked.");
+  return ok(undefined, "invitationForms.revoked");
 }
 
 export async function acceptInvitationByTokenAction(input: unknown): Promise<ActionResult> {
@@ -120,5 +128,5 @@ export async function declineInvitationAction(input: unknown): Promise<ActionRes
   if (error) return fail(errorCodeFromDatabase(error));
 
   revalidatePath("/", "layout");
-  return ok(undefined, "Invitation declined.");
+  return ok(undefined, "invitationForms.declined");
 }

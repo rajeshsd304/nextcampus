@@ -1,48 +1,54 @@
+/** Brand name is not translated. */
+export const BRAND = { first: "Next", second: "Campus", full: "NextCampus" } as const;
+
 export const siteConfig = {
-  name: "NextCampus",
-  tagline: "Secure, trusted, modern digital assessments",
-  description:
-    "NextCampus is the multi-tenant assessment platform for universities, coaching centers, training organizations and independent instructors — with role-based access, audit trails and integrity built in.",
   contactEmail: "hello@nextcampus.app",
+  /** Labels: messages `nav.<key>`. */
   marketingNav: [
-    { href: "/features", label: "Features" },
-    { href: "/exams", label: "Exam catalog" },
-    { href: "/solutions", label: "Solutions" },
-    { href: "/pricing", label: "Pricing" },
-    { href: "/faq", label: "FAQ" },
+    { href: "/exams", key: "exams" },
+    { href: "/features", key: "features" },
+    { href: "/pricing", key: "pricing" },
+    { href: "/faq", key: "faq" },
+    { href: "/contact", key: "contact" },
   ],
+  /** Titles: messages `nav.footer.<group>`; labels: messages `nav.<key>`. */
   footerNav: [
     {
-      title: "Product",
+      group: "product",
       links: [
-        { href: "/features", label: "Features" },
-        { href: "/exams", label: "Exam catalog" },
-        { href: "/pricing", label: "Pricing" },
+        { href: "/exams", key: "exams" },
+        { href: "/features", key: "features" },
+        { href: "/pricing", key: "pricing" },
       ],
     },
     {
-      title: "Institutions",
+      group: "support",
       links: [
-        { href: "/solutions", label: "Solutions" },
-        { href: "/faq", label: "FAQ" },
-        { href: "/contact", label: "Contact" },
+        { href: "/faq", key: "faq" },
+        { href: "/contact", key: "contact" },
+        { href: "/solutions", key: "solutions" },
       ],
     },
     {
-      title: "Legal",
+      group: "legal",
       links: [
-        { href: "/legal/privacy", label: "Privacy policy" },
-        { href: "/legal/terms", label: "Terms of service" },
-        { href: "/legal/acceptable-use", label: "Acceptable use" },
+        { href: "/legal/privacy", key: "privacy" },
+        { href: "/legal/terms", key: "terms" },
+        { href: "/legal/acceptable-use", key: "acceptableUse" },
       ],
     },
   ],
 } as const;
 
+export type NavKey =
+  | (typeof siteConfig.marketingNav)[number]["key"]
+  | (typeof siteConfig.footerNav)[number]["links"][number]["key"];
+
+/** Static public routes for the sitemap; catalog pages are added from the database. */
 export const PUBLIC_ROUTES = [
   "/",
-  "/features",
   "/exams",
+  "/features",
   "/solutions",
   "/pricing",
   "/faq",

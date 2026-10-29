@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
 import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { Alert } from "@/components/ui/alert";
@@ -25,6 +26,7 @@ export function EmailOnlyForm({
   successMessage: string;
   defaultEmail?: string;
 }) {
+  const t = useTranslations("authForms");
   const [pending, startTransition] = useTransition();
   const [done, setDone] = useState(false);
   const form = useForm<ForgotPasswordInput>({
@@ -49,11 +51,11 @@ export function EmailOnlyForm({
         </Alert>
       ) : null}
       <FormError message={errors.root?.server?.message} />
-      <FormField id="email" label="Email" error={errors.email?.message}>
+      <FormField id="email" label={t("email")} error={errors.email?.message}>
         <Input type="email" autoComplete="email" inputMode="email" {...form.register("email")} />
       </FormField>
       <Button type="submit" size="lg" className="w-full" disabled={pending}>
-        {pending ? <Spinner label="Sending" /> : null}
+        {pending ? <Spinner label={t("sending")} /> : null}
         {submitLabel}
       </Button>
     </form>

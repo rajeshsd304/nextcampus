@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const timezoneSchema = z
   .string()
-  .min(1, "Choose your time zone.")
+  .min(1, "validation.timezoneRequired")
   .max(64)
   .refine((tz) => {
     try {
@@ -11,11 +11,11 @@ export const timezoneSchema = z
     } catch {
       return false;
     }
-  }, "Choose a valid time zone.");
+  }, "validation.timezoneInvalid");
 
 export const profileSchema = z.object({
-  fullName: z.string().trim().min(1, "Enter your full name.").max(120, "Name is too long."),
-  displayName: z.string().trim().max(60, "Display name is too long."),
+  fullName: z.string().trim().min(1, "validation.fullNameRequired").max(120, "validation.nameTooLong"),
+  displayName: z.string().trim().max(60, "validation.displayNameTooLong"),
   timezone: timezoneSchema,
 });
 

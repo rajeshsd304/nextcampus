@@ -1,10 +1,12 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useState, useTransition } from "react";
 import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/misc";
+import { useMessageText } from "@/i18n/use-message-text";
 import {
   acceptInvitationByIdAction,
   acceptInvitationByTokenAction,
@@ -21,6 +23,8 @@ export function InvitationResponse({
   target: Target;
   allowDecline?: boolean;
 }) {
+  const t = useTranslations("invitationForms.response");
+  const text = useMessageText();
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
@@ -33,7 +37,7 @@ export function InvitationResponse({
         target.kind === "token"
           ? await acceptInvitationByTokenAction({ token: target.token })
           : await acceptInvitationByIdAction({ invitationId: target.invitationId });
-      if (result && !result.ok) setError(result.error.message);
+      if (result && !result.ok) setError(text(`errors.${result.error.code}`) ?? null);
     });
   };
 
@@ -45,16 +49,17 @@ export function InvitationResponse({
       if (result.ok) {
         setDeclined(true);
         router.refresh();
-      } else setError(result.error.message);
+      } else setError(text(`errors.${result.error.code}`) ?? null);
     });
   };
 
-  if (declined)
+  if (declined) {
     return (
       <p className="text-muted-foreground text-sm" role="status">
-        Invitation declined.
+        {t("declined")}
       </p>
     );
+  }
 
   return (
     <div className="space-y-3">
@@ -65,12 +70,12 @@ export function InvitationResponse({
       ) : null}
       <div className="flex flex-wrap gap-2">
         <Button onClick={accept} disabled={pending}>
-          {pending ? <Spinner label="Working" /> : null}
-          Accept invitation
+          {pending ? <Spinner label={t("working")} /> : null}
+          {t("accept")}
         </Button>
         {allowDecline ? (
           <Button variant="secondary" onClick={decline} disabled={pending}>
-            Decline
+            {t("decline")}
           </Button>
         ) : null}
       </div>

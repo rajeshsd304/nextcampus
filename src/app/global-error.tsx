@@ -1,5 +1,12 @@
 "use client";
 
+import bn from "../../messages/bn.json";
+import en from "../../messages/en.json";
+
+/**
+ * Replaces the root layout when it fails, so no i18n provider is available:
+ * show both languages, read directly from the message files.
+ */
 export default function GlobalError({
   error,
   reset,
@@ -8,7 +15,7 @@ export default function GlobalError({
   reset: () => void;
 }) {
   return (
-    <html lang="en">
+    <html lang="bn">
       <body
         style={{
           fontFamily: "system-ui, sans-serif",
@@ -18,11 +25,18 @@ export default function GlobalError({
           margin: 0,
         }}
       >
-        <main style={{ textAlign: "center", padding: 24 }}>
-          <h1>NextCampus is temporarily unavailable</h1>
-          <p role="alert">An unexpected error occurred.{error.digest ? ` Reference: ${error.digest}` : ""}</p>
-          <button type="button" onClick={reset} style={{ padding: "10px 18px", borderRadius: 10 }}>
-            Try again
+        <main style={{ textAlign: "center", padding: 24, lineHeight: 1.7 }}>
+          <h1>{bn.globalError.title}</h1>
+          <p lang="en">{en.globalError.title}</p>
+          <p role="alert">
+            {error.digest ? `${bn.globalError.reference} ${error.digest}` : bn.globalError.body}
+          </p>
+          <button
+            type="button"
+            onClick={reset}
+            style={{ padding: "12px 20px", borderRadius: 10, minHeight: 44 }}
+          >
+            {`${bn.globalError.retry} / ${en.globalError.retry}`}
           </button>
         </main>
       </body>

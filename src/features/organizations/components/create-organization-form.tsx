@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
 import { useState, useTransition } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { Button } from "@/components/ui/button";
@@ -11,15 +12,16 @@ import { FormError } from "@/features/auth/components/form-error";
 import { applyActionErrors } from "@/lib/forms";
 import { slugify } from "@/lib/utils";
 import { createOrganizationAction } from "../actions";
-import { ORGANIZATION_TYPE_LABELS, ORGANIZATION_TYPES } from "../constants";
+import { ORGANIZATION_TYPES } from "../constants";
 import { createOrganizationSchema, type CreateOrganizationInput } from "../schemas";
 
 export function CreateOrganizationForm() {
+  const t = useTranslations("orgForms");
   const [pending, startTransition] = useTransition();
   const [slugEdited, setSlugEdited] = useState(false);
   const form = useForm<CreateOrganizationInput>({
     resolver: zodResolver(createOrganizationSchema),
-    defaultValues: { name: "", slug: "", type: "university" },
+    defaultValues: { name: "", slug: "", type: "coaching_center" },
   });
   const { errors } = form.formState;
   const slug = useWatch({ control: form.control, name: "slug" });
@@ -41,33 +43,35 @@ export function CreateOrganizationForm() {
   return (
     <form onSubmit={onSubmit} noValidate className="space-y-5">
       <FormError message={errors.root?.server?.message} />
-      <FormField id="org-name" label="Organization name" error={errors.name?.message}>
+      <FormField id="org-name" label={t("name")} error={errors.name?.message}>
         <Input autoComplete="organization" {...nameField} />
       </FormField>
       <FormField
         id="org-slug"
-        label="Workspace address"
-        description={
-          <>
-            Your workspace URL: <span className="text-foreground font-mono">/o/{slug || "your-org"}</span>
-          </>
-        }
+        label={t("slug")}
+        description={t.rich("slugHint", {
+          url: () => (
+            <span className="text-foreground font-mono" lang="en">
+              {`/o/${slug || "your-org"}`}
+            </span>
+          ),
+        })}
         error={errors.slug?.message}
       >
-        <Input autoCapitalize="none" spellCheck={false} {...slugField} />
+        <Input autoCapitalize="none" spellCheck={false} lang="en" {...slugField} />
       </FormField>
-      <FormField id="org-type" label="Organization type" error={errors.type?.message}>
+      <FormField id="org-type" label={t("type")} error={errors.type?.message}>
         <Select {...form.register("type")}>
           {ORGANIZATION_TYPES.map((type) => (
             <option key={type} value={type}>
-              {ORGANIZATION_TYPE_LABELS[type]}
+              {t(`types.${type}`)}
             </option>
           ))}
         </Select>
       </FormField>
       <Button type="submit" size="lg" className="w-full" disabled={pending}>
-        {pending ? <Spinner label="Creating workspace" /> : null}
-        Create workspace
+        {pending ? <Spinner label={t("creating")} /> : null}
+        {t("create")}
       </Button>
     </form>
   );

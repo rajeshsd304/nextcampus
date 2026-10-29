@@ -1,11 +1,13 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { markNotificationsReadAction } from "../actions";
 
 export function MarkReadButton({ id }: { id: string }) {
+  const t = useTranslations("notifications");
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   return (
@@ -20,7 +22,7 @@ export function MarkReadButton({ id }: { id: string }) {
         })
       }
     >
-      Mark read
+      {t("markRead")}
     </Button>
   );
 }

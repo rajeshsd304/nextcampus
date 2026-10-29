@@ -1,27 +1,29 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { requestPasswordResetAction } from "@/features/auth/actions";
 import { AuthHeading } from "@/features/auth/components/auth-card";
 import { EmailOnlyForm } from "@/features/auth/components/email-only-form";
 
-export const metadata: Metadata = { title: "Reset your password" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("authPages.forgot");
+  return { title: t("title") };
+}
 
-export default function ForgotPasswordPage() {
+export default async function ForgotPasswordPage() {
+  const t = await getTranslations("authPages.forgot");
   return (
     <>
-      <AuthHeading
-        title="Reset your password"
-        description="Enter the email you use for NextCampus and we'll send you a secure reset link."
-      />
+      <AuthHeading title={t("title")} description={t("description")} />
       <EmailOnlyForm
         action={requestPasswordResetAction}
-        submitLabel="Send reset link"
-        successMessage="If an account exists for that email, a reset link is on its way. It expires in one hour."
+        submitLabel={t("submit")}
+        successMessage={t("success")}
       />
       <p className="text-muted-foreground mt-8 text-center text-sm">
-        Remembered it?{" "}
+        {t("remembered")}{" "}
         <Link href="/sign-in" className="text-primary font-semibold hover:underline dark:text-indigo-300">
-          Back to sign in
+          {t("backToSignIn")}
         </Link>
       </p>
     </>

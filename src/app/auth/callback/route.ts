@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { logAuthEvent } from "@/features/auth/server/audit";
+import { syncPreferencesAfterSignIn } from "@/features/preferences/server";
 import { getPublicEnv } from "@/lib/env";
 import { safeRedirectPath } from "@/lib/redirect";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -23,5 +24,6 @@ export async function GET(request: NextRequest) {
 
   const provider = data.user.app_metadata.provider;
   await logAuthEvent(supabase, "auth.sign_in", provider === "google" ? "google" : "email_link");
+  await syncPreferencesAfterSignIn(supabase, data.user.id);
   return NextResponse.redirect(new URL(next, siteUrl));
 }

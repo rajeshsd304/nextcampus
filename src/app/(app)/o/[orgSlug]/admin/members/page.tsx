@@ -1,37 +1,47 @@
 import { Users } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { EmptyState, PageHeader } from "@/components/ui/misc";
-import { ROLE_LABELS } from "@/features/access/roles";
+import { ORG_ROLE_DISPLAY } from "@/features/access/roles";
 import { MemberControls } from "@/features/organizations/components/member-controls";
 import { requireOrgPermission } from "@/features/organizations/server/context";
 import { listMembers } from "@/features/organizations/server/queries";
-import { formatDateTime } from "@/lib/utils";
+import { getFormatContext } from "@/features/preferences/server";
+import { formatDateTime } from "@/lib/i18n-format";
 
-export const metadata: Metadata = { title: "Members" };
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("membersPage");
+  return { title: t("title") };
+}
 
 export default async function MembersPage({ params }: PageProps<"/o/[orgSlug]/admin/members">) {
   const { orgSlug } = await params;
   const { viewer, membership } = await requireOrgPermission(orgSlug, "members.manage");
-  const members = await listMembers(membership.organizationId);
+  const [t, tRoles, fmt, members] = await Promise.all([
+    getTranslations("membersPage"),
+    getTranslations("roles"),
+    getFormatContext(viewer.profile.timezone),
+    listMembers(membership.organizationId),
+  ]);
 
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Members"
-        description="Change roles or remove access. Every change is recorded in the audit log."
+        title={t("title")}
+        description={t("description")}
         actions={
           <Button asChild>
-            <Link href={`/o/${orgSlug}/admin/invitations`}>Invite people</Link>
+            <Link href={`/o/${orgSlug}/admin/invitations`}>{t("invite")}</Link>
           </Button>
         }
       />
       {members.length === 0 ? (
-        <EmptyState icon={<Users />} title="No members yet" description="Invite people to get started." />
+        <EmptyState icon={<Users />} title={t("emptyTitle")} description={t("emptyDescription")} />
       ) : (
         <Card>
           <ul className="divide-border divide-y">
@@ -40,7 +50,7 @@ export default async function MembersPage({ params }: PageProps<"/o/[orgSlug]/ad
                 member.profile?.display_name ??
                 member.profile?.full_name ??
                 member.profile?.email ??
-                "Unknown user";
+                t("unknown");
               return (
                 <li
                   key={member.userId}
@@ -52,15 +62,15 @@ export default async function MembersPage({ params }: PageProps<"/o/[orgSlug]/ad
                       <p className="truncate font-medium">
                         {name}
                         {member.userId === viewer.user.id ? (
-                          <span className="text-muted-foreground"> (you)</span>
+                          <span className="text-muted-foreground">{` ${t("you")}`}</span>
                         ) : null}
                       </p>
                       <p className="text-muted-foreground truncate text-sm">{member.profile?.email}</p>
                       <div className="mt-1 flex flex-wrap items-center gap-2">
-                        <Badge tone="indigo">{ROLE_LABELS[member.role]}</Badge>
-                        {member.status !== "active" ? <Badge tone="warning">Suspended</Badge> : null}
+                        <Badge tone="indigo">{tRoles(`${ORG_ROLE_DISPLAY[member.role]}.label`)}</Badge>
+                        {member.status !== "active" ? <Badge tone="warning">{t("suspended")}</Badge> : null}
                         <span className="text-muted-foreground text-xs">
-                          Joined {formatDateTime(member.joinedAt, viewer.profile.timezone)}
+                          {t("joined", { date: formatDateTime(member.joinedAt, fmt) })}
                         </span>
                       </div>
                     </div>

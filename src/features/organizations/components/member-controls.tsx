@@ -1,12 +1,20 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useId, useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { Select } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/misc";
-import { ORG_ROLES, ROLE_LABELS, type OrgRole } from "@/features/access/roles";
+import {
+  ASSIGNABLE_DISPLAY_ROLES,
+  ORG_ROLE_DISPLAY,
+  toOrgRole,
+  type AssignableDisplayRole,
+  type OrgRole,
+} from "@/features/access/roles";
+import { useMessageText } from "@/i18n/use-message-text";
 import { removeMemberAction, updateMemberRoleAction } from "../actions";
 
 export function MemberControls({
@@ -22,9 +30,13 @@ export function MemberControls({
   memberName: string;
   isSelf: boolean;
 }) {
+  const t = useTranslations("orgForms.members");
+  const tRoles = useTranslations("roles");
+  const text = useMessageText();
   const router = useRouter();
   const selectId = useId();
-  const [selected, setSelected] = useState<OrgRole>(role);
+  const currentDisplay = ORG_ROLE_DISPLAY[role];
+  const [selected, setSelected] = useState<AssignableDisplayRole>(currentDisplay);
   const [message, setMessage] = useState<{ tone: "error" | "success"; text: string } | null>(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [pending, startTransition] = useTransition();
@@ -32,13 +44,17 @@ export function MemberControls({
   const saveRole = () => {
     setMessage(null);
     startTransition(async () => {
-      const result = await updateMemberRoleAction({ organizationId, userId, role: selected });
+      const result = await updateMemberRoleAction({
+        organizationId,
+        userId,
+        role: toOrgRole(selected, role),
+      });
       if (result.ok) {
-        setMessage({ tone: "success", text: result.message ?? "Saved." });
+        setMessage({ tone: "success", text: text(result.message) ?? "" });
         router.refresh();
       } else {
-        setMessage({ tone: "error", text: result.error.message });
-        setSelected(role);
+        setMessage({ tone: "error", text: text(`errors.${result.error.code}`) ?? "" });
+        setSelected(currentDisplay);
       }
     });
   };
@@ -49,7 +65,7 @@ export function MemberControls({
     startTransition(async () => {
       const result = await removeMemberAction({ organizationId, userId });
       if (result.ok) router.refresh();
-      else setMessage({ tone: "error", text: result.error.message });
+      else setMessage({ tone: "error", text: text(`errors.${result.error.code}`) ?? "" });
     });
   };
 
@@ -57,40 +73,41 @@ export function MemberControls({
     <div className="flex flex-col items-stretch gap-2 sm:items-end">
       <div className="flex flex-wrap items-center gap-2">
         <label htmlFor={selectId} className="sr-only">
-          Role for {memberName}
+          {t("roleFor", { name: memberName })}
         </label>
         <Select
           id={selectId}
           value={selected}
-          onChange={(event) => setSelected(event.target.value as OrgRole)}
-          className="h-9 w-auto min-w-44"
+          onChange={(event) => setSelected(event.target.value as AssignableDisplayRole)}
+          className="h-11 w-auto min-w-44 lg:h-9"
           disabled={pending}
         >
-          {ORG_ROLES.map((r) => (
+          {ASSIGNABLE_DISPLAY_ROLES.map((r) => (
             <option key={r} value={r}>
-              {ROLE_LABELS[r]}
+              {tRoles(`${r}.label`)}
             </option>
           ))}
         </Select>
-        <Button size="sm" variant="secondary" onClick={saveRole} disabled={pending || selected === role}>
-          {pending ? <Spinner label="Saving" /> : null}
-          Save
+        <Button
+          size="sm"
+          variant="secondary"
+          onClick={saveRole}
+          disabled={pending || selected === currentDisplay}
+        >
+          {pending ? <Spinner label={t("saving")} /> : null}
+          {t("save")}
         </Button>
         <ConfirmDialog
           open={confirmOpen}
           onOpenChange={setConfirmOpen}
           trigger={
             <Button size="sm" variant="ghost" className="text-danger" disabled={pending}>
-              {isSelf ? "Leave" : "Remove"}
+              {isSelf ? t("leave") : t("remove")}
             </Button>
           }
-          title={isSelf ? "Leave this organization?" : `Remove ${memberName}?`}
-          description={
-            isSelf
-              ? "You will lose access to this organization immediately."
-              : "They will lose access to this organization immediately. You can invite them again later."
-          }
-          confirmLabel={isSelf ? "Leave organization" : "Remove member"}
+          title={isSelf ? t("leaveTitle") : t("removeTitle", { name: memberName })}
+          description={isSelf ? t("leaveDescription") : t("removeDescription")}
+          confirmLabel={isSelf ? t("leaveConfirm") : t("removeConfirm")}
           onConfirm={remove}
         />
       </div>

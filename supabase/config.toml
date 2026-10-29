@@ -69,7 +69,7 @@ schema_paths = []
 enabled = true
 # Specifies an ordered list of seed files to load during db reset.
 # Supports glob patterns relative to supabase directory: "./seeds/*.sql"
-sql_paths = ["./seed.sql"]
+sql_paths = ["./reference-data/catalog.sql", "./seed.sql"]
 
 [db.network_restrictions]
 # Enable management of network restrictions.
@@ -323,11 +323,11 @@ max_frequency = "5s"
 # `discord`, `facebook`, `github`, `gitlab`, `google`, `keycloak`, `linkedin_oidc`, `notion`, `twitch`,
 # `twitter`, `x`, `slack`, `spotify`, `workos`, `zoom`.
 [auth.email.template.confirmation]
-subject = "Confirm your NextCampus account"
+subject = "NextCampus অ্যাকাউন্ট নিশ্চিত করুন / Confirm your NextCampus account"
 content_path = "./supabase/templates/confirmation.html"
 
 [auth.email.template.recovery]
-subject = "Reset your NextCampus password"
+subject = "NextCampus পাসওয়ার্ড রিসেট / Reset your NextCampus password"
 content_path = "./supabase/templates/recovery.html"
 
 [auth.external.google]

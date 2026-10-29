@@ -26,9 +26,10 @@ describe("profile provisioning and onboarding", () => {
     );
     expect(rows[0]).toEqual({ email: "mixed.case@example.com", full_name: "Mixed Case", onboarded_at: null });
     const audit = await db.query(
-      `select action from public.audit_logs where actor_id = '20000000-0000-4000-8000-000000000001'`,
+      `select action from public.audit_logs where actor_id = '20000000-0000-4000-8000-000000000001' order by id`,
     );
-    expect(audit.rows).toEqual([{ action: "auth.sign_up" }]);
+    // Phase 1.5: self-signups are also enrolled in the public organization.
+    expect(audit.rows).toEqual([{ action: "auth.sign_up" }, { action: "member.auto_enrolled" }]);
   });
 
   it("completes onboarding with a server timestamp and validates the timezone", async () => {

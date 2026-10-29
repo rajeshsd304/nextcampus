@@ -3,6 +3,7 @@
 import { Bell } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,21 +14,26 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { cn, formatRelativeTime } from "@/lib/utils";
+import { formatNumber, formatRelativeTime, type FormatContext } from "@/lib/i18n-format";
+import { cn } from "@/lib/utils";
 import { markNotificationsReadAction } from "../actions";
+import { NotificationText } from "../notification-text";
 import type { NotificationItem } from "../server/queries";
 import { NotificationIcon } from "./notification-icon";
 
 export function NotificationBell({
   unreadCount,
   recent,
+  format,
 }: {
   unreadCount: number;
   recent: NotificationItem[];
+  format: FormatContext;
 }) {
+  const t = useTranslations("notifications");
   const router = useRouter();
   const [pending, startTransition] = useTransition();
-  const label = unreadCount > 0 ? `Notifications, ${unreadCount} unread` : "Notifications";
+  const label = unreadCount > 0 ? t("bellUnread", { count: unreadCount }) : t("bell");
 
   const openItem = (item: NotificationItem) => {
     startTransition(async () => {
@@ -46,7 +52,9 @@ export function NotificationBell({
               className="bg-primary text-primary-foreground absolute top-1.5 right-1.5 flex min-w-4 items-center justify-center rounded-full px-1 text-[10px] leading-4 font-bold"
               aria-hidden="true"
             >
-              {unreadCount > 9 ? "9+" : unreadCount}
+              {unreadCount > 9
+                ? t("overNine", { count: formatNumber(9, format) })
+                : formatNumber(unreadCount, format)}
             </span>
           ) : null}
         </Button>
@@ -54,12 +62,12 @@ export function NotificationBell({
       <DropdownMenuContent align="end" className="w-[min(22rem,calc(100vw-2rem))]">
         <div className="flex items-center justify-between px-2.5 py-1.5">
           <DropdownMenuLabel className="text-foreground p-0 text-sm font-semibold">
-            Notifications
+            {t("title")}
           </DropdownMenuLabel>
           {unreadCount > 0 ? (
             <button
               type="button"
-              className="text-primary rounded text-xs font-medium hover:underline dark:text-indigo-300"
+              className="text-primary inline-flex min-h-11 items-center rounded px-1 text-xs font-medium hover:underline dark:text-indigo-300"
               disabled={pending}
               onClick={() =>
                 startTransition(async () => {
@@ -68,13 +76,13 @@ export function NotificationBell({
                 })
               }
             >
-              Mark all read
+              {t("markAllRead")}
             </button>
           ) : null}
         </div>
         <DropdownMenuSeparator />
         {recent.length === 0 ? (
-          <p className="text-muted-foreground px-2.5 py-6 text-center text-sm">You&apos;re all caught up.</p>
+          <p className="text-muted-foreground px-2.5 py-6 text-center text-sm">{t("caughtUp")}</p>
         ) : (
           recent.map((item) => (
             <DropdownMenuItem
@@ -84,20 +92,22 @@ export function NotificationBell({
             >
               <NotificationIcon kind={item.kind} />
               <span className="min-w-0 flex-1">
-                <span className={cn("block text-sm", !item.read_at && "font-semibold")}>{item.title}</span>
+                <span className={cn("block text-sm", !item.read_at && "font-semibold")}>
+                  <NotificationText item={item} part="title" />
+                </span>
                 <span className="text-muted-foreground block text-xs">
-                  {formatRelativeTime(item.created_at)}
+                  {formatRelativeTime(item.created_at, format)}
                 </span>
               </span>
               {!item.read_at ? (
-                <span className="bg-primary mt-1.5 size-2 rounded-full" aria-label="Unread" />
+                <span className="bg-primary mt-1.5 size-2 rounded-full" aria-label={t("unread")} />
               ) : null}
             </DropdownMenuItem>
           ))
         )}
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild className="justify-center font-medium">
-          <Link href="/notifications">View all notifications</Link>
+          <Link href="/notifications">{t("viewAll")}</Link>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

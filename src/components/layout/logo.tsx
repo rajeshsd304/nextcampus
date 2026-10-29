@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BRAND } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
 export function LogoMark({ className }: { className?: string }) {
@@ -28,13 +29,14 @@ export function Logo({ href = "/", className }: { href?: string; className?: str
     <Link
       href={href}
       className={cn(
-        "font-display inline-flex items-center gap-2.5 rounded-lg text-lg font-semibold tracking-tight",
+        "font-display inline-flex min-h-11 items-center gap-2.5 rounded-lg text-lg font-semibold tracking-tight",
         className,
       )}
     >
       <LogoMark />
-      <span>
-        Next<span className="text-primary dark:text-indigo-300">Campus</span>
+      <span lang="en">
+        {BRAND.first}
+        <span className="text-primary dark:text-indigo-300">{BRAND.second}</span>
       </span>
     </Link>
   );

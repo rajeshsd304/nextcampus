@@ -2,6 +2,7 @@
 
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
+import { useTranslations } from "next-intl";
 import type { ComponentProps, ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
@@ -23,6 +24,7 @@ export function SheetContent({
   side?: "left" | "right";
   children: ReactNode;
 }) {
+  const t = useTranslations("common");
   return (
     <DialogPrimitive.Portal>
       <DialogPrimitive.Overlay className="bg-navy-950/50 fixed inset-0 z-50 backdrop-blur-sm" />
@@ -36,7 +38,10 @@ export function SheetContent({
       >
         <div className="flex items-center justify-between">
           <DialogPrimitive.Title className="text-base font-semibold">{title}</DialogPrimitive.Title>
-          <DialogPrimitive.Close className="hover:bg-surface-muted rounded-lg p-2" aria-label="Close menu">
+          <DialogPrimitive.Close
+            className="hover:bg-surface-muted flex size-11 items-center justify-center rounded-lg"
+            aria-label={t("closeMenu")}
+          >
             <X className="size-5" aria-hidden="true" />
           </DialogPrimitive.Close>
         </div>

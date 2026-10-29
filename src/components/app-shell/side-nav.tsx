@@ -22,7 +22,7 @@ export function SideNav({
             <NavLink
               href={item.href}
               exact={item.exact ?? false}
-              className="text-muted-foreground hover:bg-surface-muted hover:text-foreground aria-[current=page]:bg-accent aria-[current=page]:text-accent-foreground flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm font-medium whitespace-nowrap transition-colors [&_svg]:size-4"
+              className="text-muted-foreground hover:bg-surface-muted hover:text-foreground aria-[current=page]:bg-accent aria-[current=page]:text-accent-foreground flex min-h-11 items-center gap-2.5 rounded-xl px-3 py-2 text-sm font-medium whitespace-nowrap transition-colors [&_svg]:size-4"
             >
               {item.icon}
               {item.label}

@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
@@ -15,6 +16,7 @@ import { FormError } from "./form-error";
 import { PasswordInput } from "./password-input";
 
 export function SignInForm({ next }: { next?: string | undefined }) {
+  const t = useTranslations("authForms");
   const [pending, startTransition] = useTransition();
   const form = useForm<SignInInput>({
     resolver: zodResolver(signInSchema),
@@ -32,23 +34,23 @@ export function SignInForm({ next }: { next?: string | undefined }) {
   return (
     <form onSubmit={onSubmit} noValidate className="space-y-4">
       <FormError message={errors.root?.server?.message} />
-      <FormField id="email" label="Email" error={errors.email?.message}>
+      <FormField id="email" label={t("email")} error={errors.email?.message}>
         <Input type="email" autoComplete="email" inputMode="email" {...form.register("email")} />
       </FormField>
-      <FormField id="password" label="Password" error={errors.password?.message}>
+      <FormField id="password" label={t("password")} error={errors.password?.message}>
         <PasswordInput autoComplete="current-password" {...form.register("password")} />
       </FormField>
       <div className="flex justify-end">
         <Link
           href="/forgot-password"
-          className="text-primary text-sm font-medium hover:underline dark:text-indigo-300"
+          className="text-primary inline-flex min-h-11 items-center text-sm font-medium hover:underline dark:text-indigo-300"
         >
-          Forgot password?
+          {t("forgotPassword")}
         </Link>
       </div>
       <Button type="submit" size="lg" className="w-full" disabled={pending}>
-        {pending ? <Spinner label="Signing in" /> : null}
-        Sign in
+        {pending ? <Spinner label={t("signingIn")} /> : null}
+        {t("signIn")}
       </Button>
     </form>
   );
